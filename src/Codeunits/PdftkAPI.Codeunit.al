@@ -1,37 +1,35 @@
-codeunit 70647565 "Pdftk API PDM"
+codeunit 70647565 "Pdftk API OKE97"
 {
     [EventSubscriber(ObjectType::Codeunit, 44, 'OnAfterDocumentReady', '', true, true)]
     procedure RunMergeFlow(ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var TargetStream: OutStream; var Success: Boolean)
     var
         DocumentType: JsonToken;
+        ReportId: JsonToken;
         Response: HttpResponseMessage;
         ResponseContent: HttpContent;
         ResponseContentStream: InStream;
+        ApiKeyRec: Record "API Key OKE97";
+        ApiKey: Text;
     begin
         ObjectPayload.Get('documenttype', DocumentType);
+        ObjectPayload.Get('objectid', ReportId);
 
-        if not (DocumentType.AsValue().AsText() = 'application/pdf') then begin
-            Success := false;
+        if not (DocumentType.AsValue().AsText() = 'application/pdf') then
             exit; // Document is not pdf, so we cannot send it to the Pdftk API
-        end;
 
-        // TODO: get api key based on report 
+        if not GetApiKey(ApiKeyRec, ReportId, ApiKey) then
+            exit; // No API key found
 
-        SendRequest(DocumentStream, 'ONTW-TEST_VOORBEELD', Response);
-        if not Response.IsSuccessStatusCode() then begin
-            Success := false;
-            TargetStream.Write(DocumentStream);
+        SendRequest(DocumentStream, ApiKey, Response);
+        if not Response.IsSuccessStatusCode() then
             exit; // Server indicated an error occured, file not modified
-        end;
 
         ResponseContent := Response.Content();
-        if not ResponseContent.ReadAs(ResponseContentStream) then begin
-            Success := false;
+        if not ResponseContent.ReadAs(ResponseContentStream) then
             exit; // Response is not a stream
-        end;
 
         Success := true;
-        CopyStream(TargetStream, ResponseContentStream);            
+        CopyStream(TargetStream, ResponseContentStream);
     end;
 
     local procedure SendRequest(SourcePdf: InStream; ApiKey: Text; var Response: HttpResponseMessage)
@@ -43,7 +41,7 @@ codeunit 70647565 "Pdftk API PDM"
         Content: HttpContent;
         ContentHeaders: HttpHeaders;
         Request: HttpRequestMessage;
-        TempBlob: Record "Temp Blob PDM" temporary;
+        TempBlob: Record "Temp Blob OKE97" temporary;
         RequestBodyOutStream: OutStream;
         RequestBodyInStream: InStream;
     begin
@@ -69,7 +67,7 @@ codeunit 70647565 "Pdftk API PDM"
         CopyStream(RequestBodyOutStream, SourcePdf);
         RequestBodyOutStream.WriteText(Newline);
         RequestBodyOutStream.WriteText('--boundary');
-        
+
         // Setup request content
         TempBlob.Blob.CreateInStream(RequestBodyInStream);
         Content.WriteFrom(RequestBodyInStream);
@@ -79,5 +77,28 @@ codeunit 70647565 "Pdftk API PDM"
         Request.Method := 'POST';
 
         Client.Send(Request, Response);
+    end;
+
+    local procedure GetApiKey(ApiKeyRec: Record "API Key OKE97"; ReportId: JsonToken; var ApiKey: Text): Boolean
+    var
+        PdmSetup: Record "Pdftk API Setup OKE97";
+    begin
+        PdmSetup.FindSet();
+        ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
+        if not ApiKeyRec.FindSet() then
+            if not PdmSetup.AlwaysRunMerge then
+                exit
+            else
+                PdmSetup.TestField(DefaultApiKey);
+
+        if ApiKeyRec.Apikey = '' then
+            ApiKey := PdmSetup.DefaultApiKey
+        else
+            ApiKey := ApiKeyRec.Apikey;
+
+        if ApiKey = '' then
+            exit(false)
+        else
+            exit(true);
     end;
 }

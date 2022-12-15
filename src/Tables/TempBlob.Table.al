@@ -1,6 +1,6 @@
-table 70647565 "Temp Blob PDM"
+table 70647565 "Temp Blob OKE97"
 {
-    Caption = 'Temp Blob PDM';
+    Caption = 'Temp Blob OKE97';
     DataClassification = SystemMetadata;
 
     fields
