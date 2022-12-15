@@ -1,0 +1,32 @@
+{
+  "id": "88cf7109-49f4-4aea-bb20-8a5cce41ab29",
+  "name": "PDM",
+  "publisher": "One-IT",
+  "version": "21.0.0.0",
+  "brief": "Merge PDF files through the online API.",
+  "description": "",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "https://pdm.one-it.nl",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "21.0.0.0",
+  "application": "21.0.0.0",
+  "idRanges": [
+    {
+      "from": 70647565,
+      "to": 70647569
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "runtime": "10.0",
+  "features": [
+    "NoImplicitWith"
+  ]
+}
