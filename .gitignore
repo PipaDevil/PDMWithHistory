@@ -1,0 +1,5 @@
+# Ignores all folders starting with a .
+.*/
+
+# Ignores all files with the .app extension
+*.app
