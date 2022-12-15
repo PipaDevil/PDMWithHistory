@@ -1,5 +1,8 @@
-codeunit 70647565 "Pdftk API OKE97"
+codeunit 70647565 "PDM Foundation OKE97"
 {
+    var
+        PdmSetup: Record "PDM Setup OKE97";
+
     [EventSubscriber(ObjectType::Codeunit, 44, 'OnAfterDocumentReady', '', true, true)]
     procedure RunMergeFlow(ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var TargetStream: OutStream; var Success: Boolean)
     var
@@ -11,6 +14,7 @@ codeunit 70647565 "Pdftk API OKE97"
         ApiKeyRec: Record "API Key OKE97";
         ApiKey: Text;
     begin
+        PdmSetup.FindSet();
         ObjectPayload.Get('documenttype', DocumentType);
         ObjectPayload.Get('objectid', ReportId);
 
@@ -80,8 +84,6 @@ codeunit 70647565 "Pdftk API OKE97"
     end;
 
     local procedure GetApiKey(ApiKeyRec: Record "API Key OKE97"; ReportId: JsonToken; var ApiKey: Text): Boolean
-    var
-        PdmSetup: Record "Pdftk API Setup OKE97";
     begin
         PdmSetup.FindSet();
         ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());

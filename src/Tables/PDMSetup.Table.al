@@ -1,6 +1,6 @@
-table 70647567 "Pdftk API Setup OKE97"
+table 70647567 "PDM Setup OKE97"
 {
-    Caption = 'Pdftk API setup OKE97';
+    Caption = 'PDM Setup ';
     DataClassification = SystemMetadata;
     
     fields

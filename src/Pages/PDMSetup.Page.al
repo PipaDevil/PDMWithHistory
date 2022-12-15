@@ -1,9 +1,9 @@
-page 70647566 "Pdftk API Setup OKE97"
+page 70647566 "PDM Setup OKE97"
 {
     ApplicationArea = Administration;
     Caption = 'Setup OKE97';
     PageType = Card;
-    SourceTable = "Pdftk API setup OKE97";
+    SourceTable = "PDM Setup OKE97";
     UsageCategory = Administration;
 
     layout
