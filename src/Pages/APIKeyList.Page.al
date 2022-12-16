@@ -1,11 +1,11 @@
-page 70647565 "API Key List OKE97"
+page 70647565 "PDM API Key List OKE97"
 {
     ApplicationArea = All;
-    Caption = 'API Key List OKE97';
+    Caption = 'PDM API Key List';
     PageType = List;
-    SourceTable = "API Key OKE97";
-    UsageCategory = Lists;
-    
+    SourceTable = "PDM API Key OKE97";
+    UsageCategory = Administration;
+
     layout
     {
         area(content)
@@ -15,6 +15,11 @@ page 70647565 "API Key List OKE97"
                 field(ReportId; Rec.ReportId)
                 {
                     ToolTip = 'Specifies the value of the ReportId field.';
+                    Enabled = AllowEditReportId;
+                }
+                field(ReportName; Rec.ReportName)
+                {
+                    ToolTip = 'Specifies the value of the ReportName field.';
                 }
                 field(Apikey; Rec.Apikey)
                 {
@@ -24,7 +29,23 @@ page 70647565 "API Key List OKE97"
                 {
                     ToolTip = 'Specifies the value of the Description field.';
                 }
+                field(Status;Rec.Status)
+                {
+                    ToolTip = 'The status of the most recent use of this key.';
+                    Enabled = false;
+                }
             }
         }
     }
+
+    var
+        PdmSetup: Record "PDM Setup OKE97";
+        [InDataSet]
+        AllowEditReportId: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        PdmSetup.FindSet();
+        AllowEditReportId := PdmSetup.AllowEditReportId;
+    end;
 }

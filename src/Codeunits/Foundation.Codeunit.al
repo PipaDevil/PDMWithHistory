@@ -8,20 +8,26 @@ codeunit 70647565 "PDM Foundation OKE97"
     var
         DocumentType: JsonToken;
         ReportId: JsonToken;
+        ReportName: JsonToken;
         Response: HttpResponseMessage;
         ResponseContent: HttpContent;
         ResponseContentStream: InStream;
-        ApiKeyRec: Record "API Key OKE97";
         ApiKey: Text;
     begin
-        PdmSetup.FindSet();
+        if not VerifyPDMSetup() then
+            exit;
+
         ObjectPayload.Get('documenttype', DocumentType);
         ObjectPayload.Get('objectid', ReportId);
+        ObjectPayload.Get('objectname', ReportName);
 
         if not (DocumentType.AsValue().AsText() = 'application/pdf') then
-            exit; // Document is not pdf, so we cannot send it to the Pdftk API
+            exit; // Document is not pdf, so we cannot send it to the API
 
-        if not GetApiKey(ApiKeyRec, ReportId, ApiKey) then
+        if not ReportInApiKeyTable(ReportId) then
+            InsertReportWithoutApiKey(ReportId, ReportName);
+
+        if not GetApiKey(ReportId, ReportName, ApiKey) then
             exit; // No API key found
 
         SendRequest(DocumentStream, ApiKey, Response);
@@ -34,6 +40,21 @@ codeunit 70647565 "PDM Foundation OKE97"
 
         Success := true;
         CopyStream(TargetStream, ResponseContentStream);
+    end;
+
+    local procedure VerifyPDMSetup(): Boolean
+    begin
+        PdmSetup.FindSet();
+
+        if not PdmSetup.UsePDM then
+            exit(false);
+
+        if PdmSetup.UseDefaultApiKey then
+            PdmSetup.TestField(DefaultApiKey);
+
+        PdmSetup.Testfield(BackgroundMergeUrl);
+
+        exit(true);
     end;
 
     local procedure SendRequest(SourcePdf: InStream; ApiKey: Text; var Response: HttpResponseMessage)
@@ -77,30 +98,53 @@ codeunit 70647565 "PDM Foundation OKE97"
         Content.WriteFrom(RequestBodyInStream);
 
         Request.content := Content;
-        Request.SetRequestUri('https://pdm.one-it.nl/v1/merge/background');
+        Request.SetRequestUri(PdmSetup.BackgroundMergeUrl);
         Request.Method := 'POST';
 
         Client.Send(Request, Response);
     end;
 
-    local procedure GetApiKey(ApiKeyRec: Record "API Key OKE97"; ReportId: JsonToken; var ApiKey: Text): Boolean
+    local procedure GetApiKey(ReportId: JsonToken; ReportName: JsonToken; var ApiKey: Text): Boolean
+    var
+        ApiKeyRec: Record "PDM API Key OKE97";
     begin
-        PdmSetup.FindSet();
         ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
-        if not ApiKeyRec.FindSet() then
-            if not PdmSetup.AlwaysRunMerge then
-                exit
-            else
-                PdmSetup.TestField(DefaultApiKey);
-
-        if ApiKeyRec.Apikey = '' then
-            ApiKey := PdmSetup.DefaultApiKey
-        else
+        if ApiKeyRec.FindSet() then begin
             ApiKey := ApiKeyRec.Apikey;
+            CheckRecordReportName(ApiKeyRec, ReportName);
+        end
+        else if PdmSetup.UseDefaultApiKey then
+            ApiKey := PdmSetup.DefaultApiKey;
 
         if ApiKey = '' then
             exit(false)
         else
             exit(true);
+    end;
+
+    local procedure ReportInApiKeyTable(ReportId: JsonToken): Boolean
+    var
+        ApiKeyRec: Record "PDM API Key OKE97";
+    begin
+        ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
+        exit(ApiKeyRec.FindSet());
+    end;
+
+    local procedure InsertReportWithoutApiKey(ReportId: JsonToken; ReportName: JsonToken)
+    var
+        ApiKeyRec: Record "PDM API Key OKE97";
+    begin
+        ApiKeyRec.Init();
+        ApiKeyRec.ReportId := ReportId.AsValue().AsInteger();
+        ApiKeyRec.ReportName := ReportName.AsValue().AsText();
+        ApiKeyRec.Insert();
+    end;
+
+    local procedure CheckRecordReportName(var ApiKeyRec: Record "PDM API Key OKE97"; ReportName: JsonToken)
+    begin
+        if ApiKeyRec.ReportName = '' then begin
+            ApiKeyRec.ReportName := ReportName.AsValue().AsText();
+            ApiKeyRec.Modify();
+        end;
     end;
 }
