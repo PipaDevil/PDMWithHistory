@@ -4,6 +4,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         PdmSetup: Record "PDM Setup OKE97";
         ApiKeyRec: Record "PDM API Key OKE97";
 
+    // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-onafterdocumentready-event
     [EventSubscriber(ObjectType::Codeunit, 44, 'OnAfterDocumentReady', '', true, true)]
     procedure RunMergeFlow(ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var TargetStream: OutStream; var Success: Boolean)
     var
@@ -55,7 +56,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         if PdmSetup.UseDefaultApiKey then
             PdmSetup.TestField(DefaultApiKey);
 
-        PdmSetup.Testfield(BackgroundMergeUrl);
+        PdmSetup.Testfield(ApiVersion);
 
         exit(true);
     end;
@@ -72,6 +73,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         TempBlob: Record "Temp Blob OKE97" temporary;
         RequestBodyOutStream: OutStream;
         RequestBodyInStream: InStream;
+        RequestUri: Text;
     begin
         // Newline character definition
         CR := 13;                   // Carriage return
@@ -100,8 +102,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         TempBlob.Blob.CreateInStream(RequestBodyInStream);
         Content.WriteFrom(RequestBodyInStream);
 
+        GetRequestUri(RequestUri);
+        Request.SetRequestUri(RequestUri);
+
         Request.content := Content;
-        Request.SetRequestUri(PdmSetup.BackgroundMergeUrl);
         Request.Method := 'POST';
 
         if not Client.Send(Request, Response) then begin
@@ -111,10 +115,17 @@ codeunit 70647565 "PDM Foundation OKE97"
             exit(true);
     end;
 
-    local procedure ReportInApiKeyTable(ReportId: JsonToken): Boolean
-    var
-        ApiKeyRec: Record "PDM API Key OKE97";
+    local procedure GetRequestUri(var RequestUri: Text)
     begin
+        case PdmSetup.ApiVersion of
+            "API Versions OKE97"::v1:
+                RequestUri := 'https://pdm.one-it.nl/v1/merge/background';
+        end;
+    end;
+
+    local procedure ReportInApiKeyTable(ReportId: JsonToken): Boolean
+    begin
+        ApiKeyRec.Reset();
         ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
         exit(ApiKeyRec.FindSet());
     end;
@@ -127,8 +138,9 @@ codeunit 70647565 "PDM Foundation OKE97"
             ApiKey := ApiKeyRec.Apikey;
             CheckRecordReportName(ApiKeyRec, ReportName);
         end
-        else if PdmSetup.UseDefaultApiKey then
-            ApiKey := PdmSetup.DefaultApiKey;
+        else
+            if PdmSetup.UseDefaultApiKey then
+                ApiKey := PdmSetup.DefaultApiKey;
 
         if ApiKey = '' then
             exit(false)
@@ -148,8 +160,8 @@ codeunit 70647565 "PDM Foundation OKE97"
 
     local procedure ParseKeyStatus(ResponseStatus: Integer): Enum "PDM API Key Status OKE97"
     begin
-        case ResponseStatus of 
-            200: 
+        case ResponseStatus of
+            200:
                 exit("PDM API Key Status OKE97"::Succes);
             401:
                 exit("PDM API Key Status OKE97"::"Error 401");
@@ -172,12 +184,13 @@ codeunit 70647565 "PDM Foundation OKE97"
 
     local procedure InsertReportWithoutApiKey(ReportId: JsonToken; ReportName: JsonToken)
     var
-        ApiKeyRec: Record "PDM API Key OKE97";
+        NewApiKeyRec: Record "PDM API Key OKE97";
     begin
-        ApiKeyRec.Init();
-        ApiKeyRec.ReportId := ReportId.AsValue().AsInteger();
-        ApiKeyRec.ReportName := ReportName.AsValue().AsText();
-        ApiKeyRec.Insert();
+        NewApiKeyRec.Init();
+        NewApiKeyRec.ReportId := ReportId.AsValue().AsInteger();
+        NewApiKeyRec.ReportName := ReportName.AsValue().AsText();
+        NewApiKeyRec.Status := "PDM API Key Status OKE97"::New;
+        NewApiKeyRec.Insert();
     end;
 
     local procedure CheckRecordReportName(var ApiKeyRec: Record "PDM API Key OKE97"; ReportName: JsonToken)
