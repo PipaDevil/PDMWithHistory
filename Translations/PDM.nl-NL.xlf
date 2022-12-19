@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="nl-NL" original="PDM">
+    <body>
+      <group id="body">
+        <trans-unit id="Table 2856871092 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>API Key OKE97</source>
+          <target>API-sleutel OKE97</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table API Key OKE97 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2856871092 - Field 3327561785 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Apikey</source>
+          <target>API-sleutel</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table API Key OKE97 - Field Apikey - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2856871092 - Field 3461834954 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Description</source>
+          <target>Omschrijving</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table API Key OKE97 - Field Description - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 2856871092 - Field 957894085 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>ReportId</source>
+          <target>RapportId</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table API Key OKE97 - Field ReportId - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 44123063 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Pdftk API setup OKE97</source>
+          <target>Pdftk API setup OKE97</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Pdftk API Setup OKE97 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 44123063 - Field 4056429660 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Use default API key when no key is setup</source>
+          <target>Gebruik standaard API-sleutel wanneer geen sleutel aanwezig is in configuratie.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Pdftk API Setup OKE97 - Field AlwaysRunMerge - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 44123063 - Field 2228246592 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Default API key to use if no other key is specified</source>
+          <target>Gebruik standaard API-sleutel als er geen andere sleutel gespecificeerd is.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Pdftk API Setup OKE97 - Field DefaultApiKey - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 44123063 - Field 1663593181 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Primary Key</source>
+          <target>Primairesleutel</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Pdftk API Setup OKE97 - Field Primary Key - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 696072588 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Temp Blob OKE97</source>
+          <target>Temp Blob OKE97</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Temp Blob OKE97 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 696072588 - Field 3926698677 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Blob</source>
+          <target>Blob</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Temp Blob OKE97 - Field Blob - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 696072588 - Field 1663593181 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Primary Key</source>
+          <target>Primairesleutel</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Temp Blob OKE97 - Field Primary Key - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2710895102 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>API Key List OKE97</source>
+          <target>API-sleutel lijst OKE97</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page API Key List OKE97 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2710895102 - Control 3327561785 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the value of the Apikey field.</source>
+          <target>Specificeerd de waarde van de API-sleutel veld.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page API Key List OKE97 - Control Apikey - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2710895102 - Control 3461834954 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the value of the Description field.</source>
+          <target>Specificeerd de waarde van de Omschrijving veld.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page API Key List OKE97 - Control Description - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2710895102 - Control 957894085 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the value of the ReportId field.</source>
+          <target>Specificeerd de waarde van de RapportId veld.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page API Key List OKE97 - Control ReportId - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 44123063 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Setup OKE97</source>
+          <target>Configuratie OKE97</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Pdftk API Setup OKE97 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 44123063 - Control 4056429660 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the value of the Setting field.</source>
+          <target>Specificeerd de waarde van de Instelling veld.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Pdftk API Setup OKE97 - Control AlwaysRunMerge - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 44123063 - Control 2228246592 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the value of the DefaultApiKey field.</source>
+          <target>Specificeerd de waarde van de StandaardAPISleutel veld.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Pdftk API Setup OKE97 - Control DefaultApiKey - Property ToolTip</note>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

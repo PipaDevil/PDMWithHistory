@@ -1,6 +1,6 @@
 page 70647566 "Pdftk API Setup OKE97"
 {
-    ApplicationArea = Administration;
+    ApplicationArea = Basic, Suite;
     Caption = 'Setup OKE97';
     PageType = Card;
     SourceTable = "Pdftk API setup OKE97";

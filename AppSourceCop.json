@@ -1,0 +1,9 @@
+{
+    "name": "PDM",
+    "mandatoryAffixes": ["OKE97"],
+    "publisher": "One-IT",
+    "baselinePackageCachePath": "./alpackages",
+    "supportedCountries": [
+        "NL", "GB", "US"
+    ]
+}

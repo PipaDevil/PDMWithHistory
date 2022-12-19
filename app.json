@@ -4,14 +4,17 @@
   "publisher": "One-IT",
   "version": "21.0.0.0",
   "brief": "Merge PDF files through the online API.",
-  "description": "",
-  "privacyStatement": "",
-  "EULA": "",
-  "help": "",
+  "description": "Merge PDF files through the online API.",
+  "privacyStatement": "https://www.one.it.nl/privacybeleid",
+  "EULA": "https://www.one-it.nl/legalstatement",
+  "help": "https://www.one-it.nl/#contact",
+  "contextSensitiveHelpUrl": "https://www.one-it.nl/pdm",
   "url": "https://pdm.one-it.nl",
-  "logo": "",
+  "logo": "./Logo.png",
   "target": "Cloud",
-  "dependencies": [],
+  "dependencies": [
+    
+  ],
   "screenshots": [],
   "platform": "21.0.0.0",
   "application": "21.0.0.0",
@@ -28,6 +31,7 @@
   },
   "runtime": "10.0",
   "features": [
+    "TranslationFile",
     "NoImplicitWith"
   ]
 }
