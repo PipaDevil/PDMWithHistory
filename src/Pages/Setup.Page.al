@@ -26,9 +26,9 @@ page 70647566 "PDM Setup OKE97"
             group(API)
             {
                 Caption = 'API';
-                field(BackgroundMergeUrl; Rec.BackgroundMergeUrl)
+                field(ApiVersion; Rec.ApiVersion)
                 {
-                    ToolTip = 'The URL to send background merge requests to.';
+                    ToolTip = 'The version of the external API to use.';
                     Enabled = Rec.UsePDM;
                 }
 
