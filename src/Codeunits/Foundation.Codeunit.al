@@ -2,6 +2,7 @@ codeunit 70647565 "PDM Foundation OKE97"
 {
     var
         PdmSetup: Record "PDM Setup OKE97";
+        ApiKeyRec: Record "PDM API Key OKE97";
 
     [EventSubscriber(ObjectType::Codeunit, 44, 'OnAfterDocumentReady', '', true, true)]
     procedure RunMergeFlow(ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var TargetStream: OutStream; var Success: Boolean)
@@ -30,8 +31,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         if not GetApiKey(ReportId, ReportName, ApiKey) then
             exit; // No API key found
 
-        SendRequest(DocumentStream, ApiKey, Response);
-        if not Response.IsSuccessStatusCode() then
+        if not SendRequest(DocumentStream, ApiKey, Response) then
+            exit; // Server unreachable
+
+        if not SuccesfulResponse(Response) then
             exit; // Server indicated an error occured, file not modified
 
         ResponseContent := Response.Content();
@@ -57,7 +60,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         exit(true);
     end;
 
-    local procedure SendRequest(SourcePdf: InStream; ApiKey: Text; var Response: HttpResponseMessage)
+    local procedure SendRequest(SourcePdf: InStream; ApiKey: Text; var Response: HttpResponseMessage): Boolean
     var
         CR: Char;
         LF: Char;
@@ -101,15 +104,26 @@ codeunit 70647565 "PDM Foundation OKE97"
         Request.SetRequestUri(PdmSetup.BackgroundMergeUrl);
         Request.Method := 'POST';
 
-        Client.Send(Request, Response);
+        if not Client.Send(Request, Response) then begin
+            SetKeyStatus("PDM API Key Status OKE97"::"Server Unreachable");
+            exit(false);
+        end else
+            exit(true);
     end;
 
-    local procedure GetApiKey(ReportId: JsonToken; ReportName: JsonToken; var ApiKey: Text): Boolean
+    local procedure ReportInApiKeyTable(ReportId: JsonToken): Boolean
     var
         ApiKeyRec: Record "PDM API Key OKE97";
     begin
         ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
-        if ApiKeyRec.FindSet() then begin
+        exit(ApiKeyRec.FindSet());
+    end;
+
+    local procedure GetApiKey(ReportId: JsonToken; ReportName: JsonToken; var ApiKey: Text): Boolean
+    begin
+        ApiKeyRec.Reset();
+        ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
+        if ApiKeyRec.FindSet() and (ApiKeyRec.Apikey <> '') then begin
             ApiKey := ApiKeyRec.Apikey;
             CheckRecordReportName(ApiKeyRec, ReportName);
         end
@@ -122,12 +136,38 @@ codeunit 70647565 "PDM Foundation OKE97"
             exit(true);
     end;
 
-    local procedure ReportInApiKeyTable(ReportId: JsonToken): Boolean
+    local procedure SuccesfulResponse(Response: HttpResponseMessage): Boolean
     var
-        ApiKeyRec: Record "PDM API Key OKE97";
+        ApiKeyStatus: Enum "PDM API Key Status OKE97";
     begin
-        ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
-        exit(ApiKeyRec.FindSet());
+        ApiKeyStatus := ParseKeyStatus(Response.HttpStatusCode);
+        SetKeyStatus(ApiKeyStatus);
+
+        exit(Response.IsSuccessStatusCode());
+    end;
+
+    local procedure ParseKeyStatus(ResponseStatus: Integer): Enum "PDM API Key Status OKE97"
+    begin
+        case ResponseStatus of 
+            200: 
+                exit("PDM API Key Status OKE97"::Succes);
+            401:
+                exit("PDM API Key Status OKE97"::"Error 401");
+            403:
+                exit("PDM API Key Status OKE97"::"Error 403");
+            404:
+                exit("PDM API Key Status OKE97"::"Error 404");
+            500:
+                exit("PDM API Key Status OKE97"::"Error 500");
+        end;
+    end;
+
+    local procedure SetKeyStatus(Status: Enum "PDM API Key Status OKE97")
+    begin
+        if ApiKeyRec.Status <> Status then begin
+            ApiKeyRec.Status := Status;
+            ApiKeyRec.Modify();
+        end
     end;
 
     local procedure InsertReportWithoutApiKey(ReportId: JsonToken; ReportName: JsonToken)

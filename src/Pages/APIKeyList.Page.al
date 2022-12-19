@@ -37,6 +37,21 @@ page 70647565 "PDM API Key List OKE97"
             }
         }
     }
+    actions
+    {
+        area(Navigation)
+        {
+            action("Open PDM Setup page")
+            {
+                Caption = 'Open PDM Setup page';
+                Image = Setup;
+                Promoted = true;
+                PromotedCategory = Process;
+                ApplicationArea = Administration;
+                RunObject = Page "PDM Setup OKE97";
+            }
+        }
+    }
 
     var
         PdmSetup: Record "PDM Setup OKE97";

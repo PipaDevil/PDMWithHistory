@@ -47,13 +47,14 @@ page 70647566 "PDM Setup OKE97"
     }
     actions
     {
-        area(Creation)
+        area(Navigation)
         {
             action("Open API key list")
             {
                 Caption = 'Open API key list';
                 Image = ListPage;
                 Promoted = true;
+                PromotedCategory = Process;
                 ApplicationArea = Administration;
                 RunObject = Page "PDM API Key List OKE97";
             }

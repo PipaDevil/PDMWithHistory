@@ -26,4 +26,8 @@ enum 70647565 "PDM API Key Status OKE97"
     {
         Caption = 'Not Found';
     }
+    value(6; "Server Unreachable")
+    {
+        Caption = 'Server Unreachable';
+    }
 }
