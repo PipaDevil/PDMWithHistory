@@ -1,3 +1,7 @@
+/// <summary>
+/// Page PDM API Key List OKE97 (ID 70647565)
+/// Provides users with a list of currently enabled API keys, and the report it's enabled for.
+/// </summary>
 page 70647565 "PDM API Key List OKE97"
 {
     ApplicationArea = Advanced;

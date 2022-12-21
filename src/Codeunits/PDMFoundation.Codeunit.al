@@ -1,10 +1,23 @@
+/// <summary>
+/// Codeunit PDM Foundation OKE97 (ID 70647565)
+/// Provides procedures which make up the foundation of the PDM extension.
+/// </summary>
 codeunit 70647565 "PDM Foundation OKE97"
 {
     var
         PdmSetup: Record "PDM Setup OKE97";
         ApiKeyRec: Record "PDM API Key OKE97";
 
-    // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-onafterdocumentready-event
+    /// <summary>
+    /// This procedure subscribes to ReportManagement's OnAfterDocumentReady event, and is the main procedure of the PDM extension.
+    /// 
+    /// Do not manually call this procedure.
+    /// </summary>
+    /// <param name="ObjectId">Integer</param>
+    /// <param name="ObjectPayload">JsonObject</param>
+    /// <param name="DocumentStream">InStream</param>
+    /// <param name="TargetStream">VAR OutStream</param>
+    /// <param name="Success">VAR Boolean</param>
     [EventSubscriber(ObjectType::Codeunit, 44, 'OnAfterDocumentReady', '', true, true)]
     procedure RunMergeFlow(ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var TargetStream: OutStream; var Success: Boolean)
     var
