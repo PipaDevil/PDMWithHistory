@@ -13,7 +13,7 @@ table 70647567 "PDM Setup OKE97"
         {
             Caption = 'Enable PDM';
         }
-        field(3; ApiVersion; Enum "API Versions OKE97")
+        field(3; ApiVersion; Enum "PDM API Versions OKE97")
         {
             Caption = 'API version';
         }

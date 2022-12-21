@@ -70,7 +70,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         Content: HttpContent;
         ContentHeaders: HttpHeaders;
         Request: HttpRequestMessage;
-        TempBlob: Record "Temp Blob OKE97" temporary;
+        TempBlob: Record "PDM Temp Blob OKE97" temporary;
         RequestBodyOutStream: OutStream;
         RequestBodyInStream: InStream;
         RequestUri: Text;
@@ -118,7 +118,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     local procedure GetRequestUri(var RequestUri: Text)
     begin
         case PdmSetup.ApiVersion of
-            "API Versions OKE97"::v1:
+            "PDM API Versions OKE97"::v1:
                 RequestUri := 'https://pdm.one-it.nl/v1/merge/background';
         end;
     end;
