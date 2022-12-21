@@ -1,6 +1,6 @@
 page 70647565 "PDM API Key List OKE97"
 {
-    ApplicationArea = All;
+    ApplicationArea = Advanced;
     Caption = 'PDM API Key List';
     PageType = List;
     SourceTable = "PDM API Key OKE97";

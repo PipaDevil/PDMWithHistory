@@ -1,6 +1,6 @@
 page 70647566 "PDM Setup OKE97"
 {
-    ApplicationArea = Administration;
+    ApplicationArea = Advanced;
     Caption = 'PDM Setup';
     PageType = Card;
     SourceTable = "PDM Setup OKE97";
