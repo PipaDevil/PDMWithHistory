@@ -4,9 +4,14 @@
 /// </summary>
 codeunit 70647565 "PDM Foundation OKE97"
 {
+    Permissions = 
+        tabledata "PDM Setup OKE97" = R,
+        tabledata "PDM API Key OKE97" = RIM;
+
     var
         PdmSetup: Record "PDM Setup OKE97";
         ApiKeyRec: Record "PDM API Key OKE97";
+        UsingDefaultApiKey: Boolean;
 
     /// <summary>
     /// This procedure subscribes to ReportManagement's OnAfterDocumentReady event, and is the main procedure of the PDM extension.
@@ -39,7 +44,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         if not (DocumentType.AsValue().AsText() = 'application/pdf') then
             exit; // Document is not pdf, so we cannot send it to the API
 
-        if not ReportInApiKeyTable(ReportId) then
+        if not ReportInApiKeyTable(ReportId.AsValue().AsInteger()) then
             InsertReportWithoutApiKey(ReportId, ReportName);
 
         if not GetApiKey(ReportId, ReportName, ApiKey) then
@@ -136,10 +141,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         end;
     end;
 
-    local procedure ReportInApiKeyTable(ReportId: JsonToken): Boolean
+    local procedure ReportInApiKeyTable(ReportId: Integer): Boolean
     begin
         ApiKeyRec.Reset();
-        ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId.AsValue().AsInteger());
+        ApiKeyRec.SetRange(ApiKeyRec.ReportId, ReportId);
         exit(ApiKeyRec.FindSet());
     end;
 
@@ -150,10 +155,15 @@ codeunit 70647565 "PDM Foundation OKE97"
         if ApiKeyRec.FindSet() and (ApiKeyRec.Apikey <> '') then begin
             ApiKey := ApiKeyRec.Apikey;
             CheckRecordReportName(ApiKeyRec, ReportName);
-        end
-        else
+        end else begin
             if PdmSetup.UseDefaultApiKey then
                 ApiKey := PdmSetup.DefaultApiKey;
+
+            if not ReportInApiKeyTable(0) then
+                InsertDefaultKeyInApiKeyTable()
+            else
+                UpdateDefaultApiKeyRec();
+        end;
 
         if ApiKey = '' then
             exit(false)
@@ -212,5 +222,35 @@ codeunit 70647565 "PDM Foundation OKE97"
             ApiKeyRec.ReportName := ReportName.AsValue().AsText();
             ApiKeyRec.Modify();
         end;
+    end;
+
+    local procedure InsertDefaultKeyInApiKeyTable()
+    var
+        DefaultName: Text;
+        DefaultDesc: Text;
+        NewApiKeyRec: Record "PDM API Key OKE97";
+    begin
+        DefaultName := 'Default - Configured in PDM setup';
+        DefaultDesc := 'Used when the report being ran does not have a key defined in this table';
+        
+        NewApiKeyRec.Init();
+        NewApiKeyRec.ReportId := 0;
+        NewApiKeyRec.ReportName := DefaultName;
+        NewApiKeyRec.Apikey := PdmSetup.DefaultApiKey;
+        NewApiKeyRec.Description := DefaultDesc;
+        NewApiKeyRec.Status := "PDM API Key Status OKE97"::New;
+        NewApiKeyRec.Insert();
+    end;
+
+    local procedure UpdateDefaultApiKeyRec()
+    var
+        DefaultApiKeyRec: Record "PDM API Key OKE97";
+    begin
+        DefaultApiKeyRec.SetRange(ReportId, 0);
+        if not DefaultApiKeyRec.FindSet() then
+            Error('Failed to find default API key in API key table');
+
+        DefaultApiKeyRec.Apikey := PdmSetup.DefaultApiKey;
+        DefaultApiKeyRec.Modify(true);
     end;
 }

@@ -1,3 +1,6 @@
+/// <summary>
+/// Table PDM Setup OKE97 (ID 70647567).
+/// </summary>
 table 70647567 "PDM Setup OKE97"
 {
     Caption = 'PDM Setup ';
@@ -17,15 +20,29 @@ table 70647567 "PDM Setup OKE97"
         {
             Caption = 'API version';
         }
-        field(4; UseDefaultApiKey; Boolean)
+
+        field(4; ApiLicenseKey; Text[250])
+        {
+            Caption = 'API license key';
+            DataClassification = OrganizationIdentifiableInformation;
+        }
+        field(5; UseDefaultApiKey; Boolean)
         {
             Caption = 'Use default API key when no key is setup';
+            DataClassification = OrganizationIdentifiableInformation;
+
+            trigger OnValidate() 
+            begin
+                if ((UseDefaultApiKey = true) and (DefaultApiKey = '')) then 
+                    FieldError(DefaultApiKey, 'Value is required');
+            end;
         }
-        field(5; DefaultApiKey; Text[250])
+        field(6; DefaultApiKey; Text[250])
         {
             Caption = 'Default API key to use if no other key is specified';
+            DataClassification = OrganizationIdentifiableInformation;
         }
-        field(6; AllowEditReportId; Boolean)
+        field(7; AllowEditReportId; Boolean)
         {
             Caption = 'Manual report ID entry';
         }

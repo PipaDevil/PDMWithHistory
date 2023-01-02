@@ -1,6 +1,6 @@
 page 70647566 "PDM Setup OKE97"
 {
-    ApplicationArea = Advanced;
+    ApplicationArea = Basic;
     Caption = 'PDM Setup';
     PageType = Card;
     SourceTable = "PDM Setup OKE97";
@@ -22,6 +22,11 @@ page 70647566 "PDM Setup OKE97"
                     ToolTip = 'Whether or not you can manually insert reports by ID into the list of API keys.';
                     Enabled = Rec.UsePDM;
                 }
+                field(ApiLicenseKey;Rec.ApiLicenseKey)
+                {
+                    ToolTip = 'License key, required to verify your requests on the external API. PDM will be toggled off in case of invalid license.';
+                    Enabled = Rec.UsePDM;
+                }
             }
             group(API)
             {
@@ -39,7 +44,7 @@ page 70647566 "PDM Setup OKE97"
                 }
                 field(DefaultApiKey; Rec.DefaultApiKey)
                 {
-                    ToolTip = 'Specifies the value of the default API key.';
+                    ToolTip = 'Specifies the default API key to use.';
                     Enabled = Rec.UsePDM and Rec.UseDefaultApiKey;
                 }
             }
@@ -55,7 +60,7 @@ page 70647566 "PDM Setup OKE97"
                 Image = ListPage;
                 Promoted = true;
                 PromotedCategory = Process;
-                ApplicationArea = Administration;
+                ApplicationArea = All;
                 RunObject = Page "PDM API Key List OKE97";
             }
         }

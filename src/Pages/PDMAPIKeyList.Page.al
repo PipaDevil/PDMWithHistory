@@ -4,11 +4,13 @@
 /// </summary>
 page 70647565 "PDM API Key List OKE97"
 {
-    ApplicationArea = Advanced;
+    ApplicationArea = Basic;
     Caption = 'PDM API Key List';
     PageType = List;
     SourceTable = "PDM API Key OKE97";
     UsageCategory = Administration;
+    Permissions = 
+        tabledata "PDM Setup OKE97" = R;
 
     layout
     {
@@ -51,7 +53,7 @@ page 70647565 "PDM API Key List OKE97"
                 Image = Setup;
                 Promoted = true;
                 PromotedCategory = Process;
-                ApplicationArea = Administration;
+                ApplicationArea = All;
                 RunObject = Page "PDM Setup OKE97";
             }
         }
