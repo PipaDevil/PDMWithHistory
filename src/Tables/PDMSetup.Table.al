@@ -28,7 +28,7 @@ table 70647567 "PDM Setup OKE97"
         }
         field(5; UseDefaultApiKey; Boolean)
         {
-            Caption = 'Use default API key when no key is setup';
+            Caption = 'Enable default API key';
             DataClassification = OrganizationIdentifiableInformation;
 
             trigger OnValidate() 
@@ -39,7 +39,7 @@ table 70647567 "PDM Setup OKE97"
         }
         field(6; DefaultApiKey; Text[250])
         {
-            Caption = 'Default API key to use if no other key is specified';
+            Caption = 'Default API key';
             DataClassification = OrganizationIdentifiableInformation;
         }
         field(7; AllowEditReportId; Boolean)
