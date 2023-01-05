@@ -5,7 +5,7 @@ table 70647567 "PDM Setup OKE97"
 {
     Caption = 'PDM Setup ';
     DataClassification = SystemMetadata;
-    
+
     fields
     {
         field(1; "Primary Key"; Code[10])
@@ -24,18 +24,11 @@ table 70647567 "PDM Setup OKE97"
         field(4; ApiLicenseKey; Text[250])
         {
             Caption = 'API license key';
-            DataClassification = OrganizationIdentifiableInformation;
         }
         field(5; UseDefaultApiKey; Boolean)
         {
             Caption = 'Enable default API key';
             DataClassification = OrganizationIdentifiableInformation;
-
-            trigger OnValidate() 
-            begin
-                if ((UseDefaultApiKey = true) and (DefaultApiKey = '')) then 
-                    FieldError(DefaultApiKey, 'Value is required');
-            end;
         }
         field(6; DefaultApiKey; Text[250])
         {
@@ -46,6 +39,18 @@ table 70647567 "PDM Setup OKE97"
         {
             Caption = 'Manual report ID entry';
         }
+        field(8; CompanyId; guid)
+        {
+            Caption = 'Company ID';
+        }
+        field(9; LicenseCheckDate; Date)
+        {
+            Caption = 'Last license verification';
+        }
+        field(10; Status; Enum "PDM Status OKE97")
+        {
+            Caption = 'License verification result';
+        }
     }
     keys
     {
@@ -54,4 +59,15 @@ table 70647567 "PDM Setup OKE97"
             Clustered = true;
         }
     }
+
+    trigger OnModify()
+    begin
+        if UsePDM then begin
+            TestField(ApiLicenseKey);
+            TestField(ApiVersion);
+        end;
+
+        if UseDefaultApiKey then
+            TestField(DefaultApiKey);
+    end;
 }

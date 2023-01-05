@@ -4,12 +4,14 @@
 /// </summary>
 codeunit 70647565 "PDM Foundation OKE97"
 {
-    Permissions = 
-        tabledata "PDM Setup OKE97" = R,
+    Permissions =
+        tabledata "PDM Setup OKE97" = RIM,
         tabledata "PDM API Key OKE97" = RIM;
 
     var
+        ApiCommunication: Codeunit "PDM API Communication OKE97";
         PdmSetup: Record "PDM Setup OKE97";
+        PdmStatus: Enum "PDM Status OKE97";
         ApiKeyRec: Record "PDM API Key OKE97";
         UsingDefaultApiKey: Boolean;
 
@@ -35,7 +37,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         ApiKey: Text;
     begin
         if not VerifyPDMSetup() then
-            exit;
+            exit; // PDM not setup correctly, or disabled due to license issue
+
+        if not VerifyLicenseKey() then
+            exit; // License key not (or no longer) valid according to external API database
 
         ObjectPayload.Get('documenttype', DocumentType);
         ObjectPayload.Get('objectid', ReportId);
@@ -50,7 +55,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         if not GetApiKey(ReportId, ReportName, ApiKey) then
             exit; // No API key found
 
-        if not SendRequest(DocumentStream, ApiKey, Response) then
+        if not ApiCommunication.SendMergeRequest(DocumentStream, ApiKey, Response) then
             exit; // Server unreachable
 
         if not SuccesfulResponse(Response) then
@@ -66,79 +71,86 @@ codeunit 70647565 "PDM Foundation OKE97"
 
     local procedure VerifyPDMSetup(): Boolean
     begin
-        PdmSetup.FindSet();
+        PdmSetup.Reset();
+        if not PdmSetup.Get() then
+            exit(false);
 
         if not PdmSetup.UsePDM then
             exit(false);
 
+        if (PdmSetup.Status = PdmStatus::Disabled) or (PdmSetup.Status = PdmStatus::"Verification failed") then
+            exit(false);
+
+        PdmSetup.Testfield(ApiLicenseKey);
+
         if PdmSetup.UseDefaultApiKey then
             PdmSetup.TestField(DefaultApiKey);
-
         PdmSetup.Testfield(ApiVersion);
 
         exit(true);
     end;
 
-    local procedure SendRequest(SourcePdf: InStream; ApiKey: Text; var Response: HttpResponseMessage): Boolean
+    /// <summary>
+    /// Attempts to verify the validity of the license key stored in the `PDM Setup` table.
+    /// Starting point for the license verification process.
+    /// </summary>
+    /// <returns>Returns a `Boolean`, where `true` is a valid license and `false` is an invalid license..</returns>
+    procedure VerifyLicenseKey(): Boolean
     var
-        CR: Char;
-        LF: Char;
-        Newline: Text;
-        Client: HttpClient;
-        Content: HttpContent;
-        ContentHeaders: HttpHeaders;
-        Request: HttpRequestMessage;
-        TempBlob: Record "PDM Temp Blob OKE97" temporary;
-        RequestBodyOutStream: OutStream;
-        RequestBodyInStream: InStream;
-        RequestUri: Text;
+        VerificationResponse: HttpResponseMessage;
     begin
-        // Newline character definition
-        CR := 13;                   // Carriage return
-        LF := 10;                   // Line feed
-        Newline += '' + CR + LF;
+        if LicenseHasBeenChecked() then
+            exit(true); // License has already been checked today
 
-        // Request headers
-        Content.GetHeaders(ContentHeaders);
-        ContentHeaders.Clear();
-        ContentHeaders.Add('Content-Type', 'multipart/form-data; boundary=boundary');
-        ContentHeaders.Add('api-key', ApiKey);
+        if not ApiCommunication.SendVerificationRequest(VerificationResponse) then
+            exit(false); // Server unreachable
 
-        // Setup request body as stream
-        TempBlob.Blob.CreateOutStream(RequestBodyOutStream);
-        RequestBodyOutStream.WriteText('--boundary' + Newline);
+        if not VerificationSucceeded(VerificationResponse) then begin
+            SetPdmStatus(PdmStatus::"Verification failed");
+            exit(false); // Verification failed
+        end;
 
-        // Fill request body with the SourcePdf file and appropriate headers
-        RequestBodyOutStream.WriteText('Content-Disposition: form-data; name="sourcePdf"' + Newline);
-        RequestBodyOutStream.WriteText('Content-Type: application/pdf' + Newline);
-        RequestBodyOutStream.WriteText(Newline);
-        CopyStream(RequestBodyOutStream, SourcePdf);
-        RequestBodyOutStream.WriteText(Newline);
-        RequestBodyOutStream.WriteText('--boundary');
-
-        // Setup request content
-        TempBlob.Blob.CreateInStream(RequestBodyInStream);
-        Content.WriteFrom(RequestBodyInStream);
-
-        GetRequestUri(RequestUri);
-        Request.SetRequestUri(RequestUri);
-
-        Request.content := Content;
-        Request.Method := 'POST';
-
-        if not Client.Send(Request, Response) then begin
-            SetKeyStatus("PDM API Key Status OKE97"::"Server Unreachable");
-            exit(false);
-        end else
-            exit(true);
+        exit(true); // Verification succeeded
     end;
 
-    local procedure GetRequestUri(var RequestUri: Text)
+    local procedure VerificationSucceeded(Response: HttpResponseMessage): Boolean
     begin
-        case PdmSetup.ApiVersion of
-            "PDM API Versions OKE97"::v1:
-                RequestUri := 'https://pdm.one-it.nl/v1/merge/background';
+        if not SuccesfulResponse(Response) then
+            exit(false); // Verification failed
+
+        SetPdmStatus(PdmStatus::Verified);
+        exit(true); // Verification succeeded
+    end;
+
+    local procedure SetPdmStatus(NewStatus: Enum "PDM Status OKE97")
+    var
+        LocalPdmSetup: Record "PDM Setup OKE97" temporary;
+    begin
+        PdmSetup.Reset();
+        if not PdmSetup.Get() then
+            Error('Failed to retreive PDM Setup record during status change.');
+
+        PdmSetup.Status := NewStatus;
+        case NewStatus of
+            PdmStatus::"Fresh install":
+                begin
+                    LocalPdmSetup.Init();
+                    PdmSetup.TransferFields(LocalPdmSetup);
+                end;
+            PdmStatus::Verified:
+                begin
+                    PdmSetup.LicenseCheckDate := Today();
+                end;
+            PdmStatus::"Verification failed":
+                begin
+                    PdmSetup.LicenseCheckDate := Today();
+                end;
+            PdmStatus::Disabled:
+                begin
+                    PdmSetup.UsePDM := false;
+                end;
         end;
+        PdmSetup.Modify();
     end;
 
     local procedure ReportInApiKeyTable(ReportId: Integer): Boolean
@@ -162,7 +174,7 @@ codeunit 70647565 "PDM Foundation OKE97"
             if not ReportInApiKeyTable(0) then
                 InsertDefaultKeyInApiKeyTable()
             else
-                UpdateDefaultApiKeyRec();
+                UpdateDefaultApiKeyRec('');
         end;
 
         if ApiKey = '' then
@@ -197,7 +209,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         end;
     end;
 
-    local procedure SetKeyStatus(Status: Enum "PDM API Key Status OKE97")
+    /// <summary>
+    /// Modifies the API key's status to the provided status.
+    /// </summary>
+    /// <param name="Status">Enum "PDM API Key Status OKE97".</param>
+    procedure SetKeyStatus(Status: Enum "PDM API Key Status OKE97")
     begin
         if ApiKeyRec.Status <> Status then begin
             ApiKeyRec.Status := Status;
@@ -232,7 +248,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     begin
         DefaultName := 'Default - Configured in PDM setup';
         DefaultDesc := 'Used when the report being ran does not have a key defined in this table';
-        
+
         NewApiKeyRec.Init();
         NewApiKeyRec.ReportId := 0;
         NewApiKeyRec.ReportName := DefaultName;
@@ -242,7 +258,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         NewApiKeyRec.Insert();
     end;
 
-    local procedure UpdateDefaultApiKeyRec()
+    local procedure UpdateDefaultApiKeyRec(NewKey: Text)
     var
         DefaultApiKeyRec: Record "PDM API Key OKE97";
     begin
@@ -250,7 +266,66 @@ codeunit 70647565 "PDM Foundation OKE97"
         if not DefaultApiKeyRec.FindSet() then
             Error('Failed to find default API key in API key table');
 
-        DefaultApiKeyRec.Apikey := PdmSetup.DefaultApiKey;
+        if (NewKey = '') then
+            NewKey := PdmSetup.DefaultApiKey;
+        
+        DefaultApiKeyRec.Apikey := NewKey;
+        DefaultApiKeyRec.ReportName := 'Default - Configured in PDM setup';
+        DefaultApiKeyRec.Description := 'Used when the report being ran does not have a key defined in this table';
         DefaultApiKeyRec.Modify(true);
+    end;
+
+    /// <summary>
+    /// Manually retries the verification of the set license key, regardless of when the last verification attempt was.
+    /// </summary>
+    /// <param name="StatusNotification">Notification.</param>
+    procedure ManualLicenseVerification(StatusNotification: Notification)
+    var
+        LocalPdmSetup: Record "PDM Setup OKE97";
+    begin
+        if not LocalPdmSetup.Get() then
+            exit;
+        
+        if VerifyLicenseKey() then
+            StatusNotification.Recall();
+    end;
+
+    /// <summary>
+    /// Checks to see if the license key has been verified today.
+    /// </summary>
+    /// <returns>Return value of type Boolean.</returns>
+    procedure LicenseHasBeenChecked(): Boolean
+    begin
+        PdmSetup.Reset();
+        if not PdmSetup.Get() then
+            Error('Could not retrieve PDM Setup record from database');
+
+        if (PdmSetup.LicenseCheckDate = Today()) and (PdmSetup.Status = PdmStatus::Verified) then
+            exit(true); // License has already been checked today
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"PDM Setup OKE97", 'OnAfterValidateEvent', 'UsePDM', true, true)]
+    local procedure OnAfterValidateUsePDMEvent(var Rec: Record "PDM Setup OKE97"; var xRec: Record "PDM Setup OKE97"; CurrFieldNo: Integer)
+    begin
+        if (Rec.UsePDM = xRec.UsePDM) then
+            exit;
+        
+        case Rec.UsePDM of
+            true:
+                Rec.Status := "PDM Status OKE97"::"Setup done";
+            false:
+                Rec.Status := "PDM Status OKE97"::Disabled;
+        end;
+        Rec.Modify();
+    end;
+
+    
+    [EventSubscriber(ObjectType::Table, Database::"PDM Setup OKE97", 'OnAfterModifyEvent', '', true, true)]
+    local procedure OnAfterModifyDefaultApiKeyEvent(var Rec: Record "PDM Setup OKE97"; var xRec: Record "PDM Setup OKE97"; RunTrigger: Boolean)
+    begin
+        if (Rec.DefaultApiKey = xRec.DefaultApiKey) then
+            exit;
+
+        UpdateDefaultApiKeyRec(Rec.DefaultApiKey);
     end;
 }
