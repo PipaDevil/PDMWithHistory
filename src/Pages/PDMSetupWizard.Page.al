@@ -14,7 +14,7 @@ page 70647567 "PDM Setup Wizard OKE97"
         {
             group(StandardBanner)
             {
-                Caption = '';
+                Caption = 'StandardBanner';
                 Editable = false;
                 Visible = TopBannerVisible and not FinishActionEnabled;
                 field(MediaResourcesStandard; MediaResourcesStandard."Media Reference")
@@ -26,7 +26,7 @@ page 70647567 "PDM Setup Wizard OKE97"
             }
             group(FinishedBanner)
             {
-                Caption = '';
+                Caption = 'FinishedBanner';
                 Editable = false;
                 Visible = TopBannerVisible and FinishActionEnabled;
                 field(MediaResourcesDone; MediaResourcesDone."Media Reference")
