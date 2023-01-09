@@ -198,16 +198,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 3615766398 - Control 300852202 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source></source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Control FinishedBanner - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Page 3615766398 - Control 1121962313 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source></source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Control StandardBanner - Property Caption</note>
-        </trans-unit>
         <trans-unit id="Page 3615766398 - Control 2859305099 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
           <source>Choose Next to get started.</source>
           <note from="Developer" annotates="general" priority="2"></note>

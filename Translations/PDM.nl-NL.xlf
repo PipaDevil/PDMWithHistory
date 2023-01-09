@@ -237,18 +237,6 @@
           <note from="Developer" annotates="general" priority="2"/>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 3615766398 - Control 300852202 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>FinishedBanner</source>
-          <target state="translated">Voltooide Banner</target>
-          <note from="Developer" annotates="general" priority="2"/>
-          <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Control FinishedBanner - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="Page 3615766398 - Control 1121962313 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>StandardBanner</source>
-          <target state="translated">Standaard Banner</target>
-          <note from="Developer" annotates="general" priority="2"/>
-          <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Control StandardBanner - Property Caption</note>
-        </trans-unit>
         <trans-unit id="Page 3615766398 - Control 2859305099 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
           <source>Choose Next to get started.</source>
           <target state="translated">Kies "Volgende" om aan de slag te gaan.</target>
