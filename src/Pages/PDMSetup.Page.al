@@ -123,7 +123,7 @@ page 70647566 "PDM Setup OKE97"
         StatusNotification: Notification;
         NotificationMessage: Text;
     begin
-        StatusNotification.Message := Format(Rec.Status);
+        NotificationMessage := Format(Rec.Status);
         case Rec.Status of
             PdmStatus::"Connection failed":
                 begin
@@ -145,7 +145,7 @@ page 70647566 "PDM Setup OKE97"
                     StatusNotification.AddAction('Retry license verificaton', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                 end;
         end;
-
+        
         StatusNotification.Message := NotificationMessage;
         StatusNotification.Scope := NotificationScope::LocalScope;
         StatusNotification.Send();
