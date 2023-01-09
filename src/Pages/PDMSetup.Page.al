@@ -30,6 +30,12 @@ page 70647566 "PDM Setup OKE97"
                     ToolTip = 'License key, required to verify your requests on the external API. PDM will be toggled off in case of invalid license.';
                     Enabled = Rec.UsePDM;
                 }
+                field(LicenseExpiryDate;Rec.LicenseExpiryDate)
+                {
+                    ToolTip = 'Expiration date of the API license, requests after this date will fail.';
+                    Enabled = Rec.UsePDM;
+                    Editable = false;
+                }
             }
             group(API)
             {

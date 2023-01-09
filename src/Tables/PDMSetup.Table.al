@@ -51,6 +51,10 @@ table 70647567 "PDM Setup OKE97"
         {
             Caption = 'License verification result';
         }
+        field(11; LicenseExpiryDate; Date)
+        {
+            Caption = 'License expiry date';
+        }
     }
     keys
     {

@@ -163,6 +163,20 @@ codeunit 70647565 "PDM Foundation OKE97"
     end;
 
     /// <summary>
+    /// Sets the value of the 'LicenseExpiryDate' field to the provided date.
+    /// </summary>
+    /// <param name="ExpiryDate">Date.</param>
+    procedure SetLicenseExpiryDate(ExpiryDate: Date)
+    begin
+        PdmSetup.Reset();
+        if not PdmSetup.Get() then
+            Error('Failed to retreive PDM Setup record during expiry date registration.');
+        
+        PdmSetup.LicenseExpiryDate := ExpiryDate;
+        PdmSetup.Modify(false);
+    end;
+
+    /// <summary>
     /// Checks if the current report being ran has already been inserted into the list of reports
     /// </summary>
     /// <param name="ReportId">Integer.</param>
@@ -208,7 +222,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     /// <summary>
     /// Checks if the merge request went through successfully, and updates the status of the relevant API key.
     /// </summary>
-    /// <param name="ResponseStatus">Integer.</param>
+    /// <param name="Response">Integer.</param>
     /// <returns>Return value of type Enum "PDM API Key Status OKE97".</returns>
     local procedure SuccesfulResponse(Response: HttpResponseMessage): Boolean
     var
