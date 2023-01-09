@@ -7,7 +7,7 @@ page 70647566 "PDM Setup OKE97"
     Caption = 'PDM Setup';
     PageType = Card;
     SourceTable = "PDM Setup OKE97";
-    UsageCategory = Administration;
+    UsageCategory = Administration;    
 
     layout
     {
@@ -66,9 +66,9 @@ page 70647566 "PDM Setup OKE97"
                 ApplicationArea = All;
                 RunObject = Page "PDM API Key List OKE97";
             }
-            action("Check License Date")
+            action("Verify license")
             {
-                Caption = 'Check License Date';
+                Caption = 'Verify license';
                 Image = EncryptionKeys;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -84,6 +84,7 @@ page 70647566 "PDM Setup OKE97"
                         StatusNotification.AddAction('Verify license', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                     end else begin
                         StatusNotification.Message := 'License has already been successfully checked today.';
+                        StatusNotification.AddAction('Verify anyway', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                     end;
                     StatusNotification.Send();
                 end;
@@ -120,7 +121,7 @@ page 70647566 "PDM Setup OKE97"
         case Rec.Status of
             PdmStatus::"Connection failed":
                 begin
-                    NotificationMessage := 'PDM wont work, because the most recent license verification attempt failed.';
+                    NotificationMessage := 'PDM wont work, because the automatic license verification attempt failed.';
                     StatusNotification.AddAction('Retry license verification', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                 end;
             PdmStatus::"Setup done":

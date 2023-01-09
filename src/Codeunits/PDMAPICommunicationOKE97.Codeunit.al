@@ -55,11 +55,35 @@ codeunit 70647567 "PDM API Communication OKE97"
         Headers.Add('api-license-key', Format(PdmSetup.ApiLicenseKey));
         Headers.Add('api-company-id', Format(PdmSetup.CompanyId));
 
-        // Set request URI, content, and method
+        // Set request URI and method
         Request.SetRequestUri('https://pdm.one-it.nl/test/license');
         Request.Method := 'POST';
 
         // Send verification request
+        exit(SendRequest(Response));
+    end;
+
+    /// <summary>
+    /// Sends a request to the external PDM API to activate the license.
+    /// </summary>
+    /// <param name="Response">VAR HttpResponseMessage.</param>
+    /// <returns>Return value of type Boolean.</returns>
+    procedure SendActivationRequest(var Response: HttpResponseMessage): Boolean
+    var
+        Headers: HttpHeaders;
+    begin
+        SetupGlobalVars();
+
+        // Request headers
+        Request.GetHeaders(Headers);
+        Headers.Add('api-license-key', Format(PdmSetup.ApiLicenseKey));
+        Headers.Add('api-company-id', Format(PdmSetup.CompanyId));
+
+        // Set request URI and method
+        Request.SetRequestUri('https://pdm.one-it.nl/license/addCompanyId');
+        Request.Method := 'POST';
+
+        // Send request
         exit(SendRequest(Response));
     end;
 
@@ -113,10 +137,23 @@ codeunit 70647567 "PDM API Communication OKE97"
 
     local procedure SendRequest(var Response: HttpResponseMessage): Boolean
     begin
-        if not Client.Send(Request, Response) then begin
-            PDMFoundation.SetKeyStatus("PDM API Key Status OKE97"::"Server Unreachable");
-            exit(false);
-        end else
-            exit(true);
+        exit(Client.Send(Request, Response));
+    end;
+
+    /// <summary>
+    /// Parses the HTTP error code into an error message for the end-user
+    /// </summary>
+    /// <param name="ResponseCode">Integer.</param>
+    /// <returns>Return value of type Text.</returns>
+    procedure ParseActivationResponseCode(ResponseCode: Integer): Text
+    begin
+        case ResponseCode of 
+            400: 
+                exit('Bad Request: Missing license key or company ID header.');
+            404:
+                exit('Unkown license key provided.');
+            423:
+                exit('License is already active and cannot be modified');
+        end;
     end;
 }

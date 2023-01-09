@@ -15,11 +15,35 @@ codeunit 70647566 "PDM Setup OKE97"
             AssistedSetup.InsertAssistedSetup('Setup PDM for first use', 'Setup PDM for first use', 'Setup PDM for first use', 1, ObjectType::Page, Page::"PDM Setup Wizard OKE97", AssistedSetupGroup::FirstInvoice, '',VideoCategory::FirstInvoice, '');
     end;
 
+    /// <summary>
+    /// This event subscriber gets called when the Assisted Setup Wizard completes, and attempts to verify and activate the provided license with the external PDM API
+    /// </summary>
     [EventSubscriber(ObjectType::Page, Page::"PDM Setup Wizard OKE97", 'OnCompletePdmSetupWizard', '', true, true)]
     procedure OnCompletePdmSetupWizard()
     var
         AssitedSetup: Codeunit "Guided Experience";
+        PdmFoundation: Codeunit "PDM Foundation OKE97";
+        ApiCommunication: Codeunit "PDM API Communication OKE97";
+        ActivationResponse: HttpResponseMessage;
+        PdmStatus: Enum "PDM Status OKE97";
     begin
         AssitedSetup.CompleteAssistedSetup(ObjectType::Page, Page::"PDM Setup Wizard OKE97");
+        
+        if not ApiCommunication.SendActivationRequest(ActivationResponse) then begin
+            PdmFoundation.SetPdmStatus(PdmStatus::"Connection failed");
+            Error('Failed to contact server for license activation.');
+        end;
+        
+        if not ActivationResponse.IsSuccessStatusCode() then begin
+            PdmFoundation.SetPdmStatus(PdmStatus::"Verification failed");
+            Error('License activation failed to complete: ' + ApiCommunication.ParseActivationResponseCode(ActivationResponse.HttpStatusCode));
+        end;
+
+        PdmFoundation.SetPdmStatus(PdmStatus::"Setup done");
+        if not PdmFoundation.VerifyLicenseKey() then
+            Error('License verification failed, please ensure you have entered the license key correctly.');
+        
+        PdmFoundation.SetPdmStatus(PdmStatus::Verified);
+        Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
     end;
 }
