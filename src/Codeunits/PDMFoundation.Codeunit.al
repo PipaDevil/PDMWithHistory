@@ -113,6 +113,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         exit(true); // Verification succeeded
     end;
 
+    /// <summary>
+    /// Checks to see if the license verification has succeeded
+    /// </summary>
+    /// <param name="Response">HttpResponseMessage.</param>
+    /// <returns>Return value of type Boolean.</returns>
     local procedure VerificationSucceeded(Response: HttpResponseMessage): Boolean
     begin
         if not Response.IsSuccessStatusCode() then
@@ -122,6 +127,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         exit(true); // Verification succeeded
     end;
 
+    /// <summary>
+    /// This procedure changes the status of the extension to the provided status. This status is only used internally to signify the current installation/verification status and should not be directly displayed to the end-user
+    /// </summary>
+    /// <param name="NewStatus">Enum "PDM Status OKE97".</param>
     procedure SetPdmStatus(NewStatus: Enum "PDM Status OKE97")
     var
         LocalPdmSetup: Record "PDM Setup OKE97" temporary;
@@ -153,6 +162,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         PdmSetup.Modify();
     end;
 
+    /// <summary>
+    /// Checks if the current report being ran has already been inserted into the list of reports
+    /// </summary>
+    /// <param name="ReportId">Integer.</param>
+    /// <returns>Return value of type Boolean.</returns>
     local procedure ReportInApiKeyTable(ReportId: Integer): Boolean
     begin
         ApiKeyRec.Reset();
@@ -160,6 +174,14 @@ codeunit 70647565 "PDM Foundation OKE97"
         exit(ApiKeyRec.FindSet());
     end;
 
+    /// <summary>
+    /// This procedure finds the API key to use for the current report. 
+    /// If no specific key has been specified for the report being ran, it defaults to the default API key if setup
+    /// </summary>
+    /// <param name="ReportId">JsonToken.</param>
+    /// <param name="ReportName">JsonToken.</param>
+    /// <param name="ApiKey">VAR Text.</param>
+    /// <returns>Return value of type Boolean.</returns>
     local procedure GetApiKey(ReportId: JsonToken; ReportName: JsonToken; var ApiKey: Text): Boolean
     begin
         ApiKeyRec.Reset();
@@ -183,6 +205,11 @@ codeunit 70647565 "PDM Foundation OKE97"
             exit(true);
     end;
 
+    /// <summary>
+    /// Checks if the merge request went through successfully, and updates the status of the relevant API key.
+    /// </summary>
+    /// <param name="ResponseStatus">Integer.</param>
+    /// <returns>Return value of type Enum "PDM API Key Status OKE97".</returns>
     local procedure SuccesfulResponse(Response: HttpResponseMessage): Boolean
     var
         ApiKeyStatus: Enum "PDM API Key Status OKE97";
@@ -193,6 +220,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         exit(Response.IsSuccessStatusCode());
     end;
 
+    /// <summary>
+    /// Parses an HTTP status code into a value of the "PDM API Key Status OKE97" enum
+    /// </summary>
+    /// <param name="ResponseStatus">Integer.</param>
+    /// <returns>Return value of type Enum "PDM API Key Status OKE97".</returns>
     local procedure ParseKeyStatus(ResponseStatus: Integer): Enum "PDM API Key Status OKE97"
     begin
         case ResponseStatus of
@@ -221,6 +253,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         end
     end;
 
+    /// <summary>
+    /// Adds the report being ran to the list of reports, without an API key
+    /// </summary>
+    /// <param name="ReportId">JsonToken.</param>
+    /// <param name="ReportName">JsonToken.</param>
     local procedure InsertReportWithoutApiKey(ReportId: JsonToken; ReportName: JsonToken)
     var
         NewApiKeyRec: Record "PDM API Key OKE97";
@@ -232,6 +269,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         NewApiKeyRec.Insert();
     end;
 
+    /// <summary>
+    /// Checks to see if the name of the report in the api key list matches the actual name of the report, and updates the name if it doesn't
+    /// </summary>
+    /// <param name="ApiKeyRec">VAR Record "PDM API Key OKE97".</param>
+    /// <param name="ReportName">JsonToken.</param>
     local procedure CheckRecordReportName(var ApiKeyRec: Record "PDM API Key OKE97"; ReportName: JsonToken)
     begin
         if ApiKeyRec.ReportName = '' then begin
@@ -240,6 +282,9 @@ codeunit 70647565 "PDM Foundation OKE97"
         end;
     end;
 
+    /// <summary>
+    /// Inserts a record for the default key into the api key list table
+    /// </summary>
     local procedure InsertDefaultKeyInApiKeyTable()
     var
         DefaultName: Text;
@@ -258,6 +303,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         NewApiKeyRec.Insert();
     end;
 
+    /// <summary>
+    /// Updates the default api key record to list a new key
+    /// </summary>
+    /// <param name="NewKey">Text.</param>
     local procedure UpdateDefaultApiKeyRec(NewKey: Text)
     var
         DefaultApiKeyRec: Record "PDM API Key OKE97";
@@ -306,6 +355,13 @@ codeunit 70647565 "PDM Foundation OKE97"
         exit(false);
     end;
 
+    /// <summary>
+    /// This procedure is a subscriber to the 'OnAfterValidateEvent' on the 'UsePDM' field of the 'PDM Setup OKE97' table.
+    /// This procedure updates the status field to be in line with the value of the 'UsePDM' field.
+    /// </summary>
+    /// <param name="Rec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="xRec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="CurrFieldNo">Integer.</param>
     [EventSubscriber(ObjectType::Table, Database::"PDM Setup OKE97", 'OnAfterValidateEvent', 'UsePDM', true, true)]
     local procedure OnAfterValidateUsePDMEvent(var Rec: Record "PDM Setup OKE97"; var xRec: Record "PDM Setup OKE97"; CurrFieldNo: Integer)
     begin
@@ -320,6 +376,13 @@ codeunit 70647565 "PDM Foundation OKE97"
         end;
     end;
     
+    /// <summary>
+    /// This procedure is a subscriber to the 'OnAfterValidateEvent' on the 'ApiLicenseKey' field of the 'PDM Setup OKE97' table.
+    /// This procedure updates the status field to reflect the verification status of the new license key.
+    /// </summary>
+    /// <param name="Rec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="xRec">VAR record "PDM Setup OKE97".</param>
+    /// <param name="CurrFieldNo">Integer.</param>
     [EventSubscriber(ObjectType::Table, Database::"PDM Setup OKE97", 'OnAfterValidateEvent', 'ApiLicenseKey', true, true)]
     local procedure OnAfterValidateApiLicenseKeyEvent(var Rec: Record "PDM Setup OKE97"; var xRec: record "PDM Setup OKE97"; CurrFieldNo: Integer)
     begin
@@ -329,6 +392,13 @@ codeunit 70647565 "PDM Foundation OKE97"
         Rec.Status := PdmStatus::"Setup done";
     end;
     
+    /// <summary>
+    /// This procedure is a subscriber to the 'OnAfterModifyEvent' of the 'PDM Setup OKE97' table.
+    /// This procedure updates the record for the default api key when it is changed.
+    /// </summary>
+    /// <param name="Rec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="xRec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="RunTrigger">Boolean.</param>
     [EventSubscriber(ObjectType::Table, Database::"PDM Setup OKE97", 'OnAfterModifyEvent', '', true, true)]
     local procedure OnAfterModifyDefaultApiKeyEvent(var Rec: Record "PDM Setup OKE97"; var xRec: Record "PDM Setup OKE97"; RunTrigger: Boolean)
     begin
