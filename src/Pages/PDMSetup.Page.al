@@ -25,9 +25,24 @@ page 70647566 "PDM Setup OKE97"
                     ToolTip = 'Whether or not you can manually insert reports by ID into the list of API keys.';
                     Enabled = Rec.UsePDM;
                 }
+            }
+            group(API)
+            {
+                Caption = 'API';
                 field(ApiLicenseKey; Rec.ApiLicenseKey)
                 {
-                    ToolTip = 'License key, required to verify your requests on the external API. PDM will be toggled off in case of invalid license.';
+                    ToolTip = 'License key, required to verify your requests on the external API. PDM will be unusable with an invalid license.';
+                    Enabled = Rec.UsePDM;
+                    Editable = false;
+                }
+                field(UseDefaultApiKey; Rec.UseDefaultApiKey)
+                {
+                    ToolTip = 'Specifies if the extension should use a default API key if there is no key specified for the report being run.';
+                    Enabled = Rec.UsePDM;
+                }
+                field(ApiVersion; Rec.ApiVersion)
+                {
+                    ToolTip = 'The version of the external API to use.';
                     Enabled = Rec.UsePDM;
                 }
                 field(LicenseExpiryDate;Rec.LicenseExpiryDate)
@@ -35,21 +50,6 @@ page 70647566 "PDM Setup OKE97"
                     ToolTip = 'Expiration date of the API license, requests after this date will fail.';
                     Enabled = Rec.UsePDM;
                     Editable = false;
-                }
-            }
-            group(API)
-            {
-                Caption = 'API';
-                field(ApiVersion; Rec.ApiVersion)
-                {
-                    ToolTip = 'The version of the external API to use.';
-                    Enabled = Rec.UsePDM;
-                }
-
-                field(UseDefaultApiKey; Rec.UseDefaultApiKey)
-                {
-                    ToolTip = 'Specifies if the extension should use a default API key if there is no key specified for the report being run.';
-                    Enabled = Rec.UsePDM;
                 }
                 field(DefaultApiKey; Rec.DefaultApiKey)
                 {

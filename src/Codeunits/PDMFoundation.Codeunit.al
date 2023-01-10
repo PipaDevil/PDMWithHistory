@@ -39,8 +39,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         if not VerifyPDMSetup() then
             exit; // PDM not setup correctly, or disabled due to license issue
 
-        if not VerifyLicenseKey() then
-            exit; // License key not (or no longer) valid according to external API database
+        
+        if not LicenseHasBeenChecked() then
+            if not VerifyLicenseKey() then
+                exit; // License key not (or no longer) valid according to external API database
 
         ObjectPayload.Get('documenttype', DocumentType);
         ObjectPayload.Get('objectid', ReportId);
@@ -99,30 +101,17 @@ codeunit 70647565 "PDM Foundation OKE97"
     var
         VerificationResponse: HttpResponseMessage;
     begin
-        if LicenseHasBeenChecked() then
-            exit(true); // License has already been checked today
-
         if not ApiCommunication.SendVerificationRequest(VerificationResponse) then
             exit(false); // Server unreachable
 
-        if not VerificationSucceeded(VerificationResponse) then begin
+        if not VerificationResponse.IsSuccessStatusCode() then begin
+            Message('License verification failed: ' + ApiCommunication.ParseVerificationResponseCode(VerificationResponse.HttpStatusCode));
+
             SetPdmStatus(PdmStatus::"Verification failed");
             exit(false); // Verification failed
         end;
 
-        exit(true); // Verification succeeded
-    end;
-
-    /// <summary>
-    /// Checks to see if the license verification has succeeded
-    /// </summary>
-    /// <param name="Response">HttpResponseMessage.</param>
-    /// <returns>Return value of type Boolean.</returns>
-    local procedure VerificationSucceeded(Response: HttpResponseMessage): Boolean
-    begin
-        if not Response.IsSuccessStatusCode() then
-            exit(false); // Verification failed
-
+        SetLicenseExpiryDate(ApiCommunication.GetExpiryDateFromResponse(VerificationResponse));
         SetPdmStatus(PdmStatus::Verified);
         exit(true); // Verification succeeded
     end;
@@ -350,7 +339,9 @@ codeunit 70647565 "PDM Foundation OKE97"
             exit;
         
         if not VerifyLicenseKey() then
-            Error('License is not currently valid, make sure it has been entered correctly.');
+            Error('License is not currently valid, make sure it has been entered correctly.')
+        else
+            Message('License successfully verified.');
     end;
 
     /// <summary>

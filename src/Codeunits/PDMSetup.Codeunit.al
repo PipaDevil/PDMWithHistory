@@ -40,26 +40,7 @@ codeunit 70647566 "PDM Setup OKE97"
         end;
 
         PdmFoundation.SetPdmStatus(PdmStatus::"Setup done");
-        if not PdmFoundation.VerifyLicenseKey() then
-            Error('License verification failed, please ensure you have entered the license key correctly.');
-        
-        PdmFoundation.SetPdmStatus(PdmStatus::Verified);
-        PdmFoundation.SetLicenseExpiryDate(GetExpiryDateFromResponseHeader(ActivationResponse));
+        PdmFoundation.VerifyLicenseKey();
         Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
-    end;
-
-    local procedure GetExpiryDateFromResponseHeader(var ActivationResponse: HttpResponseMessage): Date
-    var
-        ResponseHeaders: HttpHeaders;
-        ExpiryDateHeader: List of [Text];
-        ExpiryDate: Date;
-    begin
-        ResponseHeaders := ActivationResponse.Headers();
-        if not (ResponseHeaders.Contains('api-license-expiry-date')) then
-            Error('Reponse did not contain an expiry date for the entered license.');
-
-        ResponseHeaders.GetValues('api-license-expiry-date', ExpiryDateHeader); // Runtime error if unsuccessful
-        Evaluate(ExpiryDate, ExpiryDateHeader.Get(1));
-        exit(ExpiryDate);
     end;
 }

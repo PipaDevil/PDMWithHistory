@@ -156,4 +156,49 @@ codeunit 70647567 "PDM API Communication OKE97"
                 exit('License is already active and cannot be modified');
         end;
     end;
+
+    /// <summary>
+    /// Parses the HTTP error code into an error message for the end-user
+    /// </summary>
+    /// <param name="ResponseCode">Integer.</param>
+    /// <returns>Return value of type Text.</returns>
+    procedure ParseVerificationResponseCode(ResponseCode: Integer): Text
+    begin
+        case ResponseCode of 
+            400:
+                exit('Bad Request, missing license key or company ID header.');
+            402:
+                exit('License is inactive, this most likely means the expiration date and grace period has been exceeded.');
+            404:
+                exit('Not Found, the provided license could not be found in the external database.');
+            405:
+                exit('HTTP Method Not Allowed.');
+            409:
+                exit('Conflict, the provided license key and company ID point to conflicting licenses.');
+            424:
+                exit('Not Found, the provided company ID does not match a license in the external database.');
+            else
+                exit('Unknown error occurred!');
+        end;
+    end;
+
+    /// <summary>
+    /// Retreives the API license expiration date from a response
+    /// </summary>
+    /// <param name="Response">VAR HttpResponseMessage.</param>
+    /// <returns>Return value of type Date.</returns>
+    procedure GetExpiryDateFromResponse(var Response: HttpResponseMessage): Date
+    var
+        ResponseHeaders: HttpHeaders;
+        ExpiryDateHeader: List of [Text];
+        ExpiryDate: Date;
+    begin
+        ResponseHeaders := Response.Headers();
+        if not (ResponseHeaders.Contains('api-license-expiry-date')) then
+            Error('Reponse did not contain an expiry date for the entered license.');
+
+        ResponseHeaders.GetValues('api-license-expiry-date', ExpiryDateHeader); // Runtime error if unsuccessful
+        Evaluate(ExpiryDate, ExpiryDateHeader.Get(1)); // Runtime error if unsuccessful
+        exit(ExpiryDate);
+    end;
 }
