@@ -40,7 +40,30 @@ codeunit 70647566 "PDM Setup OKE97"
         end;
 
         PdmFoundation.SetPdmStatus(PdmStatus::"Setup done");
-        PdmFoundation.VerifyLicenseKey();
+        PdmFoundation.VerifyLicenseKey(true);
         Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
+    end;
+
+    
+    
+    /// <summary>
+    /// This procedure is a subscriber to the 'OnAfterModifyEvent' of the 'PDM Setup OKE97' table.
+    /// This procedure updates the record for the default api key when it is changed.
+    /// </summary>
+    /// <param name="Rec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="xRec">VAR Record "PDM Setup OKE97".</param>
+    /// <param name="RunTrigger">Boolean.</param>
+    [EventSubscriber(ObjectType::Table, Database::"PDM Setup OKE97", 'OnAfterModifyEvent', '', true, true)]
+    local procedure OnAfterModifyDefaultApiKeyEvent(var Rec: Record "PDM Setup OKE97"; var xRec: Record "PDM Setup OKE97"; RunTrigger: Boolean)
+    var
+        PdmFoundation: Codeunit "PDM Foundation OKE97";
+    begin
+        if (Rec.UseDefaultApiKey) then begin
+            if not (Rec.DefaultApiKey = xRec.DefaultApiKey) then
+                exit;
+
+            PdmFoundation.UpdateDefaultApiKeyRec(Rec.DefaultApiKey);
+        end;
+        
     end;
 }
