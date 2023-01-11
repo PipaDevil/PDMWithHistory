@@ -309,14 +309,17 @@ codeunit 70647565 "PDM Foundation OKE97"
     /// <summary>
     /// Updates the default api key record to list a new key
     /// </summary>
+    /// <remarks>If NewKey key is an empty string, the key from the setup record is used</remarks>
     /// <param name="NewKey">Text.</param>
-    local procedure UpdateDefaultApiKeyRec(NewKey: Text)
+    procedure UpdateDefaultApiKeyRec(NewKey: Text)
     var
         DefaultApiKeyRec: Record "PDM API Key OKE97";
     begin
         DefaultApiKeyRec.SetRange(ReportId, 0);
-        if not DefaultApiKeyRec.FindSet() then
-            Error('Failed to find default API key in API key table');
+        if not DefaultApiKeyRec.FindSet() then begin
+            InsertDefaultKeyInApiKeyTable();
+            DefaultApiKeyRec.SetRange(ReportId, 0);
+        end;
 
         if (NewKey = '') then
             NewKey := PdmSetup.DefaultApiKey;
