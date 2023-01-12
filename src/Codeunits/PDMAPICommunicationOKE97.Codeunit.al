@@ -201,4 +201,34 @@ codeunit 70647567 "PDM API Communication OKE97"
         Evaluate(ExpiryDate, ExpiryDateHeader.Get(1)); // Runtime error if unsuccessful
         exit(ExpiryDate);
     end;
+
+    /// <summary>
+    /// Parses the api-grace-period header on the response to the related value of the PDM Status enum.
+    /// </summary>
+    /// <param name="Response">VAR HttpRequestMessage.</param>
+    /// <returns>Return value of type Enum "PDM Status OKE97".</returns>
+    procedure GetGracePeriodStatus(var Response: HttpRequestMessage): Enum "PDM Status OKE97"
+    var
+        Headers: HttpHeaders;
+        Values: List of [Text];
+        RawValue: Text;
+        PdmStatus: Enum "PDM Status OKE97";
+    begin
+        Response.GetHeaders(Headers);
+        Headers.GetValues('api-grace-period', Values);
+        Values.Get(1, RawValue);
+
+        if RawValue = '' then
+            Error('Failed to retreive grace period status from server reply.');
+        
+        case RawValue of 
+            'reset',
+            'inactive':
+                exit(PdmStatus::"Verification required");
+            'active':
+                exit(PdmStatus::"Grace period active");
+            'exceeded':
+                exit(PdmStatus::"Grace period exceeded");
+        end;
+    end;
 }

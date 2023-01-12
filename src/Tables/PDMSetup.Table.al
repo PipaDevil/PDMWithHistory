@@ -55,6 +55,10 @@ table 70647567 "PDM Setup OKE97"
         {
             Caption = 'License expiry date';
         }
+        field(12; GracePeriodExpiryDate; Date)
+        {
+            Caption = 'Grace period expiry date';
+        }
     }
     keys
     {

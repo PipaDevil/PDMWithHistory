@@ -27,4 +27,12 @@ enum 70647567 "PDM Status OKE97"
     {
         Caption = 'Disabled';
     }
+    value(6; "Grace period active")
+    {
+        Caption = 'Grace period active';
+    }
+    value(7; "Grace period exceeded")
+    {
+        Caption = 'Grace period exceeded';
+    }
 }
