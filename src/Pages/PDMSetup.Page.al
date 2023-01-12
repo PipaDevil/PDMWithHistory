@@ -130,7 +130,7 @@ page 70647566 "PDM Setup OKE97"
                     NotificationMessage := 'PDM wont work, because the automatic license verification attempt failed.';
                     StatusNotification.AddAction('Retry license verification', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                 end;
-            PdmStatus::"Setup done":
+            PdmStatus::"Verification required":
                 begin
                     NotificationMessage := 'PDM is almost ready to be used, verify your license to get started!';
                     StatusNotification.AddAction('Verify license', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');

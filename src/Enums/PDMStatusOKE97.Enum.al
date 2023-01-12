@@ -7,9 +7,9 @@ enum 70647567 "PDM Status OKE97"
     {
         Caption = 'Fresh install';
     }
-    value(1; "Setup done")
+    value(1; "Verification required")
     {
-        Caption = 'Setup done';
+        Caption = 'Verification required';
     }
     value(2; Verified)
     {

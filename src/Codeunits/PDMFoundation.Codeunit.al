@@ -380,7 +380,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         
         case Rec.UsePDM of
             true:
-                Rec.Status := PdmStatus::"Setup done";
+                Rec.Status := PdmStatus::"Verification required";
             false:
                 Rec.Status := PdmStatus::Disabled;
         end;
@@ -399,6 +399,6 @@ codeunit 70647565 "PDM Foundation OKE97"
         if (Rec.ApiLicenseKey = xRec.ApiLicenseKey) then
             exit;
 
-        Rec.Status := PdmStatus::"Setup done";
+        Rec.Status := PdmStatus::"Verification required";
     end;
 }

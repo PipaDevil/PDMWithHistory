@@ -39,7 +39,7 @@ codeunit 70647566 "PDM Setup OKE97"
             Error('License activation failed to complete: ' + ApiCommunication.ParseActivationResponseCode(ActivationResponse.HttpStatusCode));
         end;
 
-        PdmFoundation.SetPdmStatus(PdmStatus::"Setup done");
+        PdmFoundation.SetPdmStatus(PdmStatus::"Verification required");
         PdmFoundation.VerifyLicenseKey(true);
         Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
     end;

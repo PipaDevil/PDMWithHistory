@@ -252,7 +252,7 @@ page 70647567 "PDM Setup Wizard OKE97"
 
         Rec.UsePDM := true;
         Rec.ApiVersion := ApiVersion::v1;
-        Rec.Status := "PDM Status OKE97"::"Setup done";
+        Rec.Status := "PDM Status OKE97"::"Verification required";
         PdmSetup.TransferFields(Rec, false);
         PdmSetup.Modify(true);
     end;
