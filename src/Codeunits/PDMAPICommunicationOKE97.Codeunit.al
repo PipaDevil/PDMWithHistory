@@ -9,20 +9,20 @@ codeunit 70647567 "PDM API Communication OKE97"
         tabledata "PDM Temp Blob OKE97" = RIMD;
 
     var
+        PdmSetup: Record "PDM Setup OKE97";
+        TempBlob: Record "PDM Temp Blob OKE97" temporary;
+        PDMFoundation: Codeunit "PDM Foundation OKE97";
         CR: Char;
         LF: Char;
-        Newline: Text;
+        ApiVersions: Enum "PDM API Versions OKE97";
         Client: HttpClient;
         Content: HttpContent;
         ContentHeaders: HttpHeaders;
         Request: HttpRequestMessage;
-        RequestURI: Text;
-        TempBlob: Record "PDM Temp Blob OKE97" temporary;
-        RequestBodyOutStream: OutStream;
         RequestBodyInStream: InStream;
-        PdmSetup: Record "PDM Setup OKE97";
-        ApiVersions: Enum "PDM API Versions OKE97";
-        PDMFoundation: Codeunit "PDM Foundation OKE97";
+        RequestBodyOutStream: OutStream;
+        Newline: Text;
+        RequestURI: Text;
 
     local procedure SetupGlobalVars()
     begin
@@ -147,8 +147,8 @@ codeunit 70647567 "PDM API Communication OKE97"
     /// <returns>Return value of type Text.</returns>
     procedure ParseActivationResponseCode(ResponseCode: Integer): Text
     begin
-        case ResponseCode of 
-            400: 
+        case ResponseCode of
+            400:
                 exit('Bad Request: Missing license key or company ID header.');
             404:
                 exit('Unkown license key provided.');
@@ -164,7 +164,7 @@ codeunit 70647567 "PDM API Communication OKE97"
     /// <returns>Return value of type Text.</returns>
     procedure ParseVerificationResponseCode(ResponseCode: Integer): Text
     begin
-        case ResponseCode of 
+        case ResponseCode of
             400:
                 exit('Bad Request, missing license key or company ID header.');
             402:
@@ -189,9 +189,9 @@ codeunit 70647567 "PDM API Communication OKE97"
     /// <returns>Return value of type Date.</returns>
     procedure GetExpiryDateFromResponse(var Response: HttpResponseMessage): Date
     var
+        ExpiryDate: Date;
         ResponseHeaders: HttpHeaders;
         ExpiryDateHeader: List of [Text];
-        ExpiryDate: Date;
     begin
         ResponseHeaders := Response.Headers();
         if not (ResponseHeaders.Contains('api-license-expiry-date')) then
@@ -209,10 +209,10 @@ codeunit 70647567 "PDM API Communication OKE97"
     /// <returns>Return value of type Enum "PDM Status OKE97".</returns>
     procedure GetGracePeriodStatus(var Response: HttpRequestMessage): Enum "PDM Status OKE97"
     var
+        PdmStatus: Enum "PDM Status OKE97";
         Headers: HttpHeaders;
         Values: List of [Text];
         RawValue: Text;
-        PdmStatus: Enum "PDM Status OKE97";
     begin
         Response.GetHeaders(Headers);
         Headers.GetValues('api-grace-period', Values);
@@ -220,8 +220,8 @@ codeunit 70647567 "PDM API Communication OKE97"
 
         if RawValue = '' then
             Error('Failed to retreive grace period status from server reply.');
-        
-        case RawValue of 
+
+        case RawValue of
             'reset',
             'inactive':
                 exit(PdmStatus::"Verification required");

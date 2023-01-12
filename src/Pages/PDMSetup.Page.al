@@ -3,11 +3,11 @@
 /// </summary>
 page 70647566 "PDM Setup OKE97"
 {
-    ApplicationArea = Basic;
+    ApplicationArea = Basic, Suite;
     Caption = 'PDM Setup';
     PageType = Card;
     SourceTable = "PDM Setup OKE97";
-    UsageCategory = Administration;    
+    UsageCategory = Administration;
 
     layout
     {
@@ -45,7 +45,7 @@ page 70647566 "PDM Setup OKE97"
                     ToolTip = 'The version of the external API to use.';
                     Enabled = Rec.UsePDM;
                 }
-                field(LicenseExpiryDate;Rec.LicenseExpiryDate)
+                field(LicenseExpiryDate; Rec.LicenseExpiryDate)
                 {
                     ToolTip = 'Expiration date of the API license, requests after this date will fail.';
                     Enabled = Rec.UsePDM;
@@ -145,7 +145,7 @@ page 70647566 "PDM Setup OKE97"
                     StatusNotification.AddAction('Retry license verificaton', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                 end;
         end;
-        
+
         StatusNotification.Message := NotificationMessage;
         StatusNotification.Scope := NotificationScope::LocalScope;
         StatusNotification.Send();

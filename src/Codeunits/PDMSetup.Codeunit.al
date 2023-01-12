@@ -7,12 +7,12 @@ codeunit 70647566 "PDM Setup OKE97"
     local procedure OnRegisterAssistedSetup()
     var
         AssistedSetup: Codeunit "Guided Experience";
-        GuidedExperienceType: Enum "Guided Experience Type";
         AssistedSetupGroup: Enum "Assisted Setup Group";
+        GuidedExperienceType: Enum "Guided Experience Type";
         VideoCategory: Enum "Video Category";
     begin
         if not AssistedSetup.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"PDM Setup Wizard OKE97") then
-            AssistedSetup.InsertAssistedSetup('Setup PDM for first use', 'Setup PDM for first use', 'Setup PDM for first use', 1, ObjectType::Page, Page::"PDM Setup Wizard OKE97", AssistedSetupGroup::FirstInvoice, '',VideoCategory::FirstInvoice, '');
+            AssistedSetup.InsertAssistedSetup('Setup PDM for first use', 'Setup PDM for first use', 'Setup PDM for first use', 1, ObjectType::Page, Page::"PDM Setup Wizard OKE97", AssistedSetupGroup::FirstInvoice, '', VideoCategory::FirstInvoice, '');
     end;
 
     /// <summary>
@@ -22,18 +22,18 @@ codeunit 70647566 "PDM Setup OKE97"
     procedure OnCompletePdmSetupWizard()
     var
         AssitedSetup: Codeunit "Guided Experience";
-        PdmFoundation: Codeunit "PDM Foundation OKE97";
         ApiCommunication: Codeunit "PDM API Communication OKE97";
-        ActivationResponse: HttpResponseMessage;
+        PdmFoundation: Codeunit "PDM Foundation OKE97";
         PdmStatus: Enum "PDM Status OKE97";
+        ActivationResponse: HttpResponseMessage;
     begin
         AssitedSetup.CompleteAssistedSetup(ObjectType::Page, Page::"PDM Setup Wizard OKE97");
-        
+
         if not ApiCommunication.SendActivationRequest(ActivationResponse) then begin
             PdmFoundation.SetPdmStatus(PdmStatus::"Connection failed");
             Error('Failed to contact server for license activation.');
         end;
-        
+
         if not ActivationResponse.IsSuccessStatusCode() then begin
             PdmFoundation.SetPdmStatus(PdmStatus::"Verification failed");
             Error('License activation failed to complete: ' + ApiCommunication.ParseActivationResponseCode(ActivationResponse.HttpStatusCode));
@@ -44,8 +44,8 @@ codeunit 70647566 "PDM Setup OKE97"
         Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
     end;
 
-    
-    
+
+
     /// <summary>
     /// This procedure is a subscriber to the 'OnAfterModifyEvent' of the 'PDM Setup OKE97' table.
     /// This procedure updates the record for the default api key when it is changed.
@@ -64,6 +64,6 @@ codeunit 70647566 "PDM Setup OKE97"
 
             PdmFoundation.UpdateDefaultApiKeyRec(Rec.DefaultApiKey);
         end;
-        
+
     end;
 }

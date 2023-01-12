@@ -65,6 +65,7 @@ page 70647567 "PDM Setup Wizard OKE97"
                     field(ApiLicenseKey; Rec.ApiLicenseKey)
                     {
                         ApplicationArea = All;
+                        ToolTip = 'Field were you put the license in to activate PDM.';
                     }
 
                     group(LKDesc)
@@ -156,14 +157,14 @@ page 70647567 "PDM Setup Wizard OKE97"
     end;
 
     var
+        BackActionEnabled: Boolean;
+        FinishActionEnabled: Boolean;
+        NextActionEnabled: Boolean;
+        ShowWebshopAction: Boolean;
         Step1Visible: Boolean;
         Step2Visible: Boolean;
         Step3Visible: Boolean;
         Step: Option Start,Step2,Finish;
-        BackActionEnabled: Boolean;
-        NextActionEnabled: Boolean;
-        FinishActionEnabled: Boolean;
-        ShowWebshopAction: Boolean;
 
     local procedure NextStep(Backwards: Boolean);
     begin
@@ -236,9 +237,9 @@ page 70647567 "PDM Setup Wizard OKE97"
 
     local procedure StoreRecordVar();
     var
-        ApiVersion: Enum "PDM API Versions OKE97";
-        PdmSetup: Record "PDM Setup OKE97";
         Company: Record Company;
+        PdmSetup: Record "PDM Setup OKE97";
+        ApiVersion: Enum "PDM API Versions OKE97";
         CompanyId: Guid;
     begin
         if not PdmSetup.Get() then begin
