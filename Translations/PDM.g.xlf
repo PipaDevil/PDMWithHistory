@@ -99,7 +99,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table PDM Setup OKE97 - Field UsePDM - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 3880568619 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Temp Blob OKE97</source>
+          <source>PDM Temp Blob</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table PDM Temp Blob OKE97 - Property Caption</note>
         </trans-unit>
@@ -142,6 +142,11 @@
           <source>The status of the most recent use of this key.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDM API Key List OKE97 - Control Status - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 2937883333 - Action 366389283 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Opens the PDM Setup page</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page PDM API Key List OKE97 - Action Open PDM Setup page - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 2937883333 - Action 366389283 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Open PDM Setup page</source>
@@ -243,6 +248,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Control License key - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 3615766398 - Control 3288980208 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Field were you put the license in to activate PDM.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page PDM Setup Wizard OKE97 - Control ApiLicenseKey - Property ToolTip</note>
+        </trans-unit>
         <trans-unit id="Page 3615766398 - Control 2467187642 - Property 1968111052" size-unit="char" translate="yes" xml:space="preserve">
           <source>Open the webshop with the button below.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -293,10 +303,20 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PDM Rolecenter OKE97 - Action PDM OKE97 - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 3135880011 - Action 2937883333 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3513039640">
+          <source>Executes the PDM API Key List action.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PDM Rolecenter OKE97 - Action PDM API Key List OKE97 - Property ToolTip</note>
+        </trans-unit>
         <trans-unit id="PageExtension 3135880011 - Action 2937883333 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3513039640">
-          <source>PDM Api Key List</source>
+          <source>PDM API Key List</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension PDM Rolecenter OKE97 - Action PDM API Key List OKE97 - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3135880011 - Action 4107174579 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3513039640">
+          <source>Executes the PDM Setup action.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension PDM Rolecenter OKE97 - Action PDM Setup OKE97 - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="PageExtension 3135880011 - Action 4107174579 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3513039640">
           <source>PDM Setup</source>

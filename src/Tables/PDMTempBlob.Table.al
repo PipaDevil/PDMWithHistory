@@ -1,6 +1,6 @@
 table 70647565 "PDM Temp Blob OKE97"
 {
-    Caption = 'Temp Blob OKE97';
+    Caption = 'PDM Temp Blob';
     DataClassification = SystemMetadata;
 
     fields
