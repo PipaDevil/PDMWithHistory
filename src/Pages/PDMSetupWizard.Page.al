@@ -154,9 +154,15 @@ page 70647567 "PDM Setup Wizard OKE97"
 
         Step := Step::Start;
         EnableControls();
+        
+        Extension.SetFilter("App ID", '{88cf7109-49f4-4aea-bb20-8a5cce41ab29}');
+        Extension.FindSet();
+        Extension."Allow HttpClient Requests" := true;
+        Extension.Modify();
     end;
 
     var
+        Extension: Record "NAV App Setting";
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
         NextActionEnabled: Boolean;
