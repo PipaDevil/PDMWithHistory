@@ -10,10 +10,16 @@
   "help": "https://pdm.one-it.nl/guide",
   "contextSensitiveHelpUrl": "https://www.one-it.nl/support",
   "url": "https://pdm.one-it.nl",
-  "logo": "./Logo.png",
+  "logo": "./img/Logo.png",
   "target": "Cloud",
   "dependencies": [],
-  "screenshots": [],
+  "screenshots": [
+    "./img/Screenshot1.png",
+    "./img/Screenshot2.png",
+    "./img/Screenshot3.png",
+    "./img/Screenshot4.png",
+    "./img/Screenshot5.png"
+  ],
   "platform": "21.0.0.0",
   "application": "21.0.0.0",
   "idRanges": [

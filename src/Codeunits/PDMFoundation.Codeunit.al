@@ -9,11 +9,11 @@ codeunit 70647565 "PDM Foundation OKE97"
         tabledata "PDM API Key OKE97" = RIM;
 
     var
-        ApiCommunication: Codeunit "PDM API Communication OKE97";
-        PdmSetup: Record "PDM Setup OKE97";
-        PdmStatus: Enum "PDM Status OKE97";
         ApiKeyRec: Record "PDM API Key OKE97";
+        PdmSetup: Record "PDM Setup OKE97";
+        ApiCommunication: Codeunit "PDM API Communication OKE97";
         UsingDefaultApiKey: Boolean;
+        PdmStatus: Enum "PDM Status OKE97";
 
     /// <summary>
     /// This procedure subscribes to ReportManagement's OnAfterDocumentReady event, and is the main procedure of the PDM extension.
@@ -28,18 +28,18 @@ codeunit 70647565 "PDM Foundation OKE97"
     [EventSubscriber(ObjectType::Codeunit, 44, 'OnAfterDocumentReady', '', true, true)]
     procedure RunMergeFlow(ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var TargetStream: OutStream; var Success: Boolean)
     var
+        ResponseContent: HttpContent;
+        Response: HttpResponseMessage;
+        ResponseContentStream: InStream;
         DocumentType: JsonToken;
         ReportId: JsonToken;
         ReportName: JsonToken;
-        Response: HttpResponseMessage;
-        ResponseContent: HttpContent;
-        ResponseContentStream: InStream;
         ApiKey: Text;
     begin
         if not VerifyPDMSetup() then
             exit; // PDM not setup correctly, or disabled due to license issue
 
-        
+
         if not LicenseHasBeenChecked() then
             if not VerifyLicenseKey(false) then
                 exit; // License key not (or no longer) valid according to external API database
@@ -128,7 +128,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     /// <param name="NewStatus">Enum "PDM Status OKE97".</param>
     procedure SetPdmStatus(NewStatus: Enum "PDM Status OKE97")
     var
-        LocalPdmSetup: Record "PDM Setup OKE97" temporary;
+        TempLocalPdmSetup: Record "PDM Setup OKE97" temporary;
     begin
         PdmSetup.Reset();
         if (not PdmSetup.Get()) and (NewStatus <> PdmStatus::"Fresh install") then
@@ -137,8 +137,8 @@ codeunit 70647565 "PDM Foundation OKE97"
         case NewStatus of
             PdmStatus::"Fresh install":
                 begin
-                    LocalPdmSetup.Init();
-                    PdmSetup.TransferFields(LocalPdmSetup);
+                    TempLocalPdmSetup.Init();
+                    PdmSetup.TransferFields(TempLocalPdmSetup);
                 end;
             PdmStatus::"Grace period active",
             PdmStatus::Verified,
@@ -162,7 +162,7 @@ codeunit 70647565 "PDM Foundation OKE97"
         PdmSetup.Reset();
         if not PdmSetup.Get() then
             Error('Failed to retreive PDM Setup record during expiry date registration.');
-        
+
         PdmSetup.LicenseExpiryDate := ExpiryDate;
         PdmSetup.Modify(false);
     end;
@@ -292,9 +292,9 @@ codeunit 70647565 "PDM Foundation OKE97"
     /// </summary>
     local procedure InsertDefaultKeyInApiKeyTable()
     var
-        DefaultName: Text;
-        DefaultDesc: Text;
         NewApiKeyRec: Record "PDM API Key OKE97";
+        DefaultDesc: Text;
+        DefaultName: Text;
     begin
         DefaultName := 'Default - Configured in PDM setup';
         DefaultDesc := 'Used when the report being ran does not have a key defined in this table';
@@ -325,7 +325,7 @@ codeunit 70647565 "PDM Foundation OKE97"
 
         if (NewKey = '') then
             NewKey := PdmSetup.DefaultApiKey;
-        
+
         DefaultApiKeyRec.Apikey := NewKey;
         DefaultApiKeyRec.ReportName := 'Default - Configured in PDM setup';
         DefaultApiKeyRec.Description := 'Used when the report being ran does not have a key defined in this table';
@@ -342,7 +342,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     begin
         if not LocalPdmSetup.Get() then
             exit;
-        
+
         if not VerifyLicenseKey(false) then
             Error('License is not currently valid, make sure it has been entered correctly.')
         else
@@ -377,7 +377,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     begin
         if (Rec.UsePDM = xRec.UsePDM) then
             exit;
-        
+
         case Rec.UsePDM of
             true:
                 Rec.Status := PdmStatus::"Verification required";
@@ -385,7 +385,7 @@ codeunit 70647565 "PDM Foundation OKE97"
                 Rec.Status := PdmStatus::Disabled;
         end;
     end;
-    
+
     /// <summary>
     /// This procedure is a subscriber to the 'OnAfterValidateEvent' on the 'ApiLicenseKey' field of the 'PDM Setup OKE97' table.
     /// This procedure updates the status field to reflect the verification status of the new license key.

@@ -4,12 +4,12 @@
 /// </summary>
 page 70647565 "PDM API Key List OKE97"
 {
-    ApplicationArea = Basic;
+    ApplicationArea = Basic, Suite;
     Caption = 'PDM API Key List';
     PageType = List;
     SourceTable = "PDM API Key OKE97";
     UsageCategory = Administration;
-    Permissions = 
+    Permissions =
         tabledata "PDM Setup OKE97" = R;
 
     layout
@@ -35,7 +35,7 @@ page 70647565 "PDM API Key List OKE97"
                 {
                     ToolTip = 'Specifies the value of the Description field.';
                 }
-                field(Status;Rec.Status)
+                field(Status; Rec.Status)
                 {
                     ToolTip = 'The status of the most recent use of this key.';
                     Enabled = false;
@@ -50,6 +50,7 @@ page 70647565 "PDM API Key List OKE97"
             action("Open PDM Setup page")
             {
                 Caption = 'Open PDM Setup page';
+                ToolTip = 'Opens the PDM Setup page';
                 Image = Setup;
                 Promoted = true;
                 PromotedCategory = Process;

@@ -2,7 +2,7 @@
 /// Enum that provides information about the status of the extension
 /// </summary>
 enum 70647567 "PDM Status OKE97"
-{    
+{
     value(0; "Fresh install")
     {
         Caption = 'Fresh install';

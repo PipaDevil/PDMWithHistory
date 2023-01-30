@@ -1,7 +1,7 @@
 enum 70647565 "PDM API Key Status OKE97"
 {
     Extensible = true;
-    
+
     value(0; New)
     {
         Caption = 'New';

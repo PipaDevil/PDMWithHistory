@@ -78,4 +78,18 @@ table 70647567 "PDM Setup OKE97"
         if UseDefaultApiKey then
             TestField(DefaultApiKey);
     end;
+
+
+ //* Disables Outbound Httpclient OnDelete. RST 23-01-2023
+    trigger OnDelete()
+    var
+        Extension: Record "NAV App Setting";
+        ExtensionID: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(ExtensionID);
+        Extension.SetFilter("App ID", ExtensionID.Id);
+        Extension.FindSet();
+        Extension."Allow HttpClient Requests" := false;
+        Extension.Modify();
+    end;
 }
