@@ -155,18 +155,17 @@ page 70647567 "PDM Setup Wizard OKE97"
         Step := Step::Start;
         EnableControls();
         
-        //* Enables Outbound Httpclient OnOpenPage. RST 23-01-2023
-        NavApp.GetCurrentModuleInfo(ExtensionID);
-        Extension.SetFilter("App ID", ExtensionID.Id);
-        Extension.FindSet();
-        Extension."Allow HttpClient Requests" := true;
-        Extension.Modify();
-        
+    //     //* Enables Outbound Httpclient OnOpenPage. RST 23-01-2023
+    //     NavApp.GetCurrentModuleInfo(ExtensionID);
+    //     Extension.SetFilter("App ID", ExtensionID.Id);
+    //     Extension.FindSet();
+    //     Extension."Allow HttpClient Requests" := true;
+    //     Extension.Modify();
     end;
 
     var
-        ExtensionID: ModuleInfo;
-        Extension: Record "NAV App Setting";
+        // ExtensionID: ModuleInfo;
+        // Extension: Record "NAV App Setting";
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
         NextActionEnabled: Boolean;

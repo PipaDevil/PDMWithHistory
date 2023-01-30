@@ -40,8 +40,8 @@ codeunit 70647566 "PDM Setup OKE97"
         end;
 
         PdmFoundation.SetPdmStatus(PdmStatus::"Verification required");
-        PdmFoundation.VerifyLicenseKey(true);
-        Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
+        if PdmFoundation.VerifyLicenseKey(true) then
+            Message('PDM Setup completed, license has been succesfull verified.\Enter a default API key to get started, or open the API key list to add keys for specific reports.');
     end;
 
 

@@ -56,8 +56,8 @@ codeunit 70647567 "PDM API Communication OKE97"
         Headers.Add('api-company-id', Format(PdmSetup.CompanyId));
 
         // Set request URI and method
-        Request.SetRequestUri('https://pdm.one-it.nl/test/license');
-        Request.Method := 'POST';
+        Request.SetRequestUri('https://pdm.one-it.nl/license/verify');
+        Request.Method := 'GET';
 
         // Send verification request
         exit(SendRequest(Response));
@@ -215,8 +215,11 @@ codeunit 70647567 "PDM API Communication OKE97"
         RawValue: Text;
     begin
         Headers := Response.Headers();
-        Headers.GetValues('api-grace-period', Values);
-        Values.Get(1, RawValue);
+        if not Headers.Contains('api-grace-period') then
+            Error('Response did not contain the status of your license''s grace period.');
+
+        Headers.GetValues('api-grace-period', Values); // Runtime error if unsuccessful
+        RawValue := Values.Get(1); // Runtime error if unsuccessful
 
         if RawValue = '' then
             Error('Failed to retreive grace period status from server reply.');
