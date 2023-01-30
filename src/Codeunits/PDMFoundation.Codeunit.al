@@ -101,6 +101,7 @@ codeunit 70647565 "PDM Foundation OKE97"
     procedure VerifyLicenseKey(SendErrMsg: Boolean): Boolean
     var
         VerificationResponse: HttpResponseMessage;
+        NewStatus: Enum "PDM Status OKE97";
     begin
         if not ApiCommunication.SendVerificationRequest(VerificationResponse) then
             exit(false); // Server unreachable
@@ -114,7 +115,10 @@ codeunit 70647565 "PDM Foundation OKE97"
         end;
 
         SetLicenseExpiryDate(ApiCommunication.GetExpiryDateFromResponse(VerificationResponse));
-        SetPdmStatus(PdmStatus::Verified);
+        
+        //TEST: set status to verified or a grace period related status depending on headers
+        NewStatus := ApiCommunication.GetGracePeriodStatus(VerificationResponse);      
+        SetPdmStatus(NewStatus);
         exit(true); // Verification succeeded
     end;
 
@@ -127,29 +131,25 @@ codeunit 70647565 "PDM Foundation OKE97"
         LocalPdmSetup: Record "PDM Setup OKE97" temporary;
     begin
         PdmSetup.Reset();
-        if not PdmSetup.Get() then
+        if (not PdmSetup.Get()) and (NewStatus <> PdmStatus::"Fresh install") then
             Error('Failed to retreive PDM Setup record during status change.');
 
-        PdmSetup.Status := NewStatus;
         case NewStatus of
             PdmStatus::"Fresh install":
                 begin
                     LocalPdmSetup.Init();
                     PdmSetup.TransferFields(LocalPdmSetup);
                 end;
-            PdmStatus::Verified:
-                begin
-                    PdmSetup.LicenseCheckDate := Today();
-                end;
+            PdmStatus::"Grace period active",
+            PdmStatus::Verified,
             PdmStatus::"Verification failed":
-                begin
                     PdmSetup.LicenseCheckDate := Today();
-                end;
+            PdmStatus::"Grace period exceeded",
             PdmStatus::Disabled:
-                begin
                     PdmSetup.UsePDM := false;
-                end;
         end;
+
+        PdmSetup.Status := NewStatus;
         PdmSetup.Modify();
     end;
 

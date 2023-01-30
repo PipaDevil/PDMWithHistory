@@ -136,14 +136,16 @@ page 70647566 "PDM Setup OKE97"
                     StatusNotification.AddAction('Verify license', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                 end;
             PdmStatus::Disabled:
-                begin
                     NotificationMessage := 'PDM is currently disabled, switch it on to get started.';
-                end;
             PdmStatus::"Verification failed":
                 begin
                     NotificationMessage := 'PDM wont work, because the license is invalid.';
                     StatusNotification.AddAction('Retry license verificaton', Codeunit::"PDM Foundation OKE97", 'ManualLicenseVerification');
                 end;
+            PdmStatus::"Grace period active":
+                NotificationMessage := 'The registered license is about to expire, PDM has entered the grace period!';
+            PdmStatus::"Grace period exceeded":
+                NotificationMessage := 'The registered license has expired, refresh it to continue using PDM.';
         end;
         
         StatusNotification.Message := NotificationMessage;

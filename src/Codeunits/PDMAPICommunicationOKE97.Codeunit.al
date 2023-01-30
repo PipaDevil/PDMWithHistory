@@ -205,16 +205,16 @@ codeunit 70647567 "PDM API Communication OKE97"
     /// <summary>
     /// Parses the api-grace-period header on the response to the related value of the PDM Status enum.
     /// </summary>
-    /// <param name="Response">VAR HttpRequestMessage.</param>
+    /// <param name="Response">VAR HttpResponseMessage.</param>
     /// <returns>Return value of type Enum "PDM Status OKE97".</returns>
-    procedure GetGracePeriodStatus(var Response: HttpRequestMessage): Enum "PDM Status OKE97"
+    procedure GetGracePeriodStatus(var Response: HttpResponseMessage): Enum "PDM Status OKE97"
     var
         Headers: HttpHeaders;
         Values: List of [Text];
         RawValue: Text;
         PdmStatus: Enum "PDM Status OKE97";
     begin
-        Response.GetHeaders(Headers);
+        Headers := Response.Headers();
         Headers.GetValues('api-grace-period', Values);
         Values.Get(1, RawValue);
 
@@ -222,8 +222,11 @@ codeunit 70647567 "PDM API Communication OKE97"
             Error('Failed to retreive grace period status from server reply.');
         
         case RawValue of 
-            'reset',
+            'disabled':
+                exit(PdmStatus::Disabled);
             'inactive':
+                exit(PdmStatus::Verified);
+            'reset': // Not yet implemented on PDM API
                 exit(PdmStatus::"Verification required");
             'active':
                 exit(PdmStatus::"Grace period active");
